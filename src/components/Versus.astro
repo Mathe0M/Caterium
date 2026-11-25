@@ -1,0 +1,69 @@
+---
+/** Comparatif en trois cartes : logiciel du marché, IA en solo, Caterium. */
+type State = 'yes' | 'mid' | 'no';
+const criteria = ['Adapté à votre métier', 'Branché à vos outils', 'Sécurité, accès, RGPD', 'Coût dans la durée', 'Si ça casse', 'Vos équipes'];
+const cols: { name: string; sub: string; us?: boolean; rows: [State, string][] }[] = [
+  {
+    name: 'Logiciel du marché', sub: 'Un SaaS prêt à l\'emploi',
+    rows: [['mid', 'Vous vous adaptez à lui'], ['mid', 'Selon les connecteurs'], ['yes', 'Correct'], ['no', 'Grimpe par utilisateur'], ['mid', 'Un support, quelque part'], ['mid', 'Des tutoriels']],
+  },
+  {
+    name: 'IA en solo', sub: 'Un outil généré soi-même',
+    rows: [['mid', 'Si vous savez quoi demander'], ['no', 'Rarement fiable'], ['no', 'À vos risques'], ['yes', 'Pas d\'abonnement'], ['no', 'Personne'], ['no', 'Débrouillez-vous']],
+  },
+  {
+    name: 'Caterium', sub: 'Un outil pensé avec vous', us: true,
+    rows: [['yes', 'Pensé pour votre métier'], ['yes', 'Branché à l\'existant'], ['yes', 'Inclus dès le départ'], ['yes', 'Pas de coût par utilisateur'], ['yes', 'Un interlocuteur qui répond'], ['yes', 'Formées et autonomes']],
+  },
+];
+const label: Record<State, string> = { yes: 'Oui', mid: 'En partie', no: 'Non' };
+---
+<div class="vs" role="list" aria-label="Comparaison entre un logiciel du marché, un outil fait avec l'IA en solo et Caterium">
+  {cols.map((c) => (
+    <div class={`vcol ${c.us ? 'vcol--us' : ''}`} role="listitem">
+      <div class="vhead">
+        {c.us && <span class="tag mono">LE BON ÉQUILIBRE</span>}
+        <h3>{c.name}</h3>
+        <p>{c.sub}</p>
+      </div>
+      <ul>
+        {c.rows.map(([st, txt], i) => (
+          <li>
+            <span class={`dot dot--${st}`} aria-hidden="true">{st === 'yes' ? '✓' : st === 'mid' ? '~' : '✕'}</span>
+            <span class="txt"><span class="crit mono">{criteria[i]}</span>{txt}<span class="sr-only"> ({label[st]})</span></span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>
+
+<style>
+  .vs { display: grid; grid-template-columns: 1fr 1fr 1.08fr; gap: 1rem; align-items: stretch; margin-top: 2.4rem; }
+  .vcol { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.5rem; }
+  .vcol--us {
+    background: var(--ink); color: #fff; border: 0; transform: translateY(-10px);
+    box-shadow: 0 0 0 2px var(--violet), 0 24px 50px -20px rgb(109 59 255 / .65);
+  }
+  .vhead { min-height: 5.2rem; }
+  .tag { display: inline-block; font-size: .68rem; background: var(--orange); color: var(--ink); padding: .2rem .5rem; border-radius: 5px; margin-bottom: .6rem; }
+  h3 { font-size: 1.35rem; margin: 0 0 .2rem; }
+  .vhead p { margin: 0; color: var(--ink-soft); font-size: .95rem; }
+  .vcol--us .vhead p { color: #d6d0ec; }
+  ul { list-style: none; padding: 0; margin: 1.2rem 0 0; display: grid; gap: .25rem; }
+  li { display: flex; gap: .75rem; align-items: flex-start; padding: .7rem 0; border-top: 1px solid var(--line); }
+  .vcol--us li { border-color: rgb(255 255 255 / .12); }
+  .dot { flex: none; width: 1.5rem; height: 1.5rem; border-radius: 50%; display: grid; place-items: center; font-size: .8rem; font-weight: 700; margin-top: .1rem; }
+  .dot--yes { background: var(--violet); color: #fff; }
+  .dot--mid { background: var(--orange-soft); color: var(--orange-text); }
+  .dot--no { background: #ece8df; color: #8a8494; }
+  .vcol--us .dot--yes { background: var(--orange); color: var(--ink); }
+  .txt { display: flex; flex-direction: column; font-weight: 600; font-size: .98rem; line-height: 1.35; }
+  .crit { font-weight: 500; font-size: .7rem; letter-spacing: .03em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: .15rem; }
+  .vcol--us .crit { color: var(--violet-light); }
+  @media (max-width: 900px) {
+    .vs { grid-template-columns: 1fr; }
+    .vcol--us { transform: none; order: -1; }
+    .vhead { min-height: 0; }
+  }
+</style>
