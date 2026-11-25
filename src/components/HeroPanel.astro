@@ -3,14 +3,14 @@
  * Panneau « usine » de l'accueil.
  * Entrées (sources) → briques construites au centre → sorties (destinataires).
  * - cliquer un élément le débranche / le rebranche ;
- * - la case « + » sous chaque colonne branche l'élément suivant ;
+ * - la case « + » sous chaque colonne ouvre un menu pour choisir l'élément à brancher ;
  * - les fils sont tracés en SVG d'après la position réelle des éléments.
  */
 const inputs = ['Tableurs', 'Logiciels métier', 'E-mails'];
-const inputsMore = ['Site internet', 'CRM'];
+const inputsMore = ['Site internet', 'CRM', 'Logiciel de caisse', 'Comptabilité', 'Agenda partagé', 'Formulaires en ligne'];
 const modules = ['Tableau de bord', 'Assistant IA', 'Alertes'];
 const outputs = ['Direction', 'Équipes', 'Clients'];
-const outputsMore = ['Expert-comptable', 'Fournisseurs'];
+const outputsMore = ['Expert-comptable', 'Fournisseurs', 'Commerciaux', 'Service client', 'Partenaires'];
 const bars = [40, 55, 48, 72, 94];
 ---
 <div class="panel" data-panel>
@@ -26,7 +26,8 @@ const bars = [40, 55, 48, 72, 94];
     <div class="col col--in" data-col="in" data-more={JSON.stringify(inputsMore)}>
       <span class="lbl mono">ENTRÉES</span>
       {inputs.map((s) => <button type="button" class="node node--in" aria-pressed="true" data-node="in">{s}</button>)}
-      <button type="button" class="slot" data-slot="in"></button>
+      <button type="button" class="slot" data-slot="in" aria-expanded="false" aria-haspopup="true" aria-label="Brancher une source">+ Brancher</button>
+      <div class="menu" data-menu="in" hidden></div>
     </div>
 
     <div class="core" data-core>
@@ -37,7 +38,8 @@ const bars = [40, 55, 48, 72, 94];
     <div class="col col--out" data-col="out" data-more={JSON.stringify(outputsMore)}>
       <span class="lbl mono">SORTIES</span>
       {outputs.map((s) => <button type="button" class="node node--out" aria-pressed="true" data-node="out">{s}</button>)}
-      <button type="button" class="slot" data-slot="out"></button>
+      <button type="button" class="slot" data-slot="out" aria-expanded="false" aria-haspopup="true" aria-label="Ajouter un destinataire">+ Ajouter</button>
+      <div class="menu" data-menu="out" hidden></div>
     </div>
   </div>
 
@@ -72,32 +74,58 @@ const bars = [40, 55, 48, 72, 94];
     function bindNode(el: HTMLElement) { el.addEventListener('click', () => toggle(el)); }
     panel.querySelectorAll<HTMLElement>('[data-node], [data-mod]').forEach(bindNode);
 
-    // Cases « + » : branchent l'élément suivant de la réserve
+    // Cases « + » : ouvrent un menu pour choisir l'élément à brancher
+    const cid = [...panel.getAttributeNames()].filter((a) => a.startsWith('data-astro-cid'));
+    const scope = (el: Element) => cid.forEach((a) => el.setAttribute(a, ''));
+    const menus: { slot: HTMLButtonElement; menu: HTMLElement }[] = [];
+    function closeAll(except?: HTMLElement) {
+      menus.forEach(({ slot, menu }) => { if (menu !== except) { menu.hidden = true; slot.setAttribute('aria-expanded', 'false'); } });
+    }
     for (const slot of panel.querySelectorAll<HTMLButtonElement>('[data-slot]')) {
       const side = slot.dataset.slot as 'in' | 'out';
       const col = panel.querySelector<HTMLElement>(`[data-col="${side}"]`)!;
+      const menu = panel.querySelector<HTMLElement>(`[data-menu="${side}"]`)!;
       const pool: string[] = JSON.parse(col.dataset.more || '[]');
-      const label = () => {
-        if (pool.length) { slot.textContent = `+ ${pool[0]}`; slot.setAttribute('aria-label', `Brancher : ${pool[0]}`); }
-        else { slot.textContent = side === 'in' ? '+ Votre outil ?' : '+ Qui d’autre ?'; slot.setAttribute('aria-label', 'Un autre élément à brancher ? Écrivez-moi'); }
+      menus.push({ slot, menu });
+      const render = () => {
+        menu.replaceChildren();
+        for (const item of pool) {
+          const opt = document.createElement('button');
+          opt.type = 'button'; opt.className = 'opt'; opt.textContent = item; scope(opt);
+          opt.addEventListener('click', () => {
+            pool.splice(pool.indexOf(item), 1);
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = `node node--${side} node--new`;
+            b.setAttribute('aria-pressed', 'true'); b.dataset.node = side; b.textContent = item; scope(b);
+            col.insertBefore(b, slot);
+            bindNode(b);
+            menu.hidden = true; slot.setAttribute('aria-expanded', 'false');
+            render(); draw(); slot.focus();
+          });
+          menu.appendChild(opt);
+        }
+        const other = document.createElement('a');
+        other.href = '/contact/'; other.className = 'opt opt--other'; scope(other);
+        other.textContent = side === 'in' ? 'Un autre outil ? Écrivez-moi →' : 'Quelqu’un d’autre ? Écrivez-moi →';
+        menu.appendChild(other);
       };
-      slot.addEventListener('click', () => {
-        if (!pool.length) { location.href = '/contact/'; return; }
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = `node node--${side} node--new`;
-        b.setAttribute('aria-pressed', 'true');
-        b.dataset.node = side;
-        b.textContent = pool.shift()!;
-        // reprend l'attribut de portée du composant pour le style
-        for (const a of slot.getAttributeNames()) if (a.startsWith('data-astro-cid')) b.setAttribute(a, '');
-        col.insertBefore(b, slot);
-        bindNode(b);
-        label();
-        draw();
+      render();
+      slot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const open = menu.hidden;
+        closeAll(menu);
+        menu.hidden = !open;
+        slot.setAttribute('aria-expanded', String(open));
+        if (open) menu.querySelector<HTMLElement>('.opt')?.focus();
       });
-      label();
+      menu.addEventListener('click', (e) => e.stopPropagation());
     }
+    document.addEventListener('click', () => closeAll());
+    panel.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      const open = menus.find(({ menu }) => !menu.hidden);
+      if (open) { closeAll(); open.slot.focus(); }
+    });
 
     function center(el: Element, side: 'l' | 'r') {
       const f = flow.getBoundingClientRect(), r = el.getBoundingClientRect();
@@ -175,7 +203,21 @@ const bars = [40, 55, 48, 72, 94];
   .slot {
     background: transparent; border: 1.5px dashed #5a5275; color: #b9b2d6; font-weight: 500;
   }
-  .slot:hover { border-color: var(--orange-light); color: #fff; }
+  .slot:hover, .slot[aria-expanded='true'] { border-color: var(--orange-light); color: #fff; }
+  .menu {
+    position: absolute; z-index: 5; left: 0; right: 0; top: 100%; margin-top: .4rem;
+    background: #fff; color: var(--ink); border-radius: 12px; padding: .35rem;
+    box-shadow: 0 18px 40px -12px rgb(0 0 0 / .6); display: flex; flex-direction: column; gap: 2px;
+    min-width: 170px;
+  }
+  .col--out .menu { left: auto; }
+  .menu[hidden] { display: none; }
+  .opt {
+    font: 600 .84rem/1.2 var(--font-text); text-align: left; color: var(--ink); background: none; border: 0;
+    border-radius: 8px; padding: .55rem .6rem; cursor: pointer; text-decoration: none;
+  }
+  .opt:hover, .opt:focus-visible { background: var(--violet-soft); color: var(--violet-text); outline: none; }
+  .opt--other { border-top: 1px solid var(--line); border-radius: 0 0 8px 8px; margin-top: .2rem; color: var(--orange-text); font-weight: 700; }
 
   .core {
     position: relative; border-radius: 18px; background: #2a1a6e; padding: .8rem .7rem;
