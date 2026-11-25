@@ -2,7 +2,7 @@
 /**
  * Panneau « usine » de l'accueil.
  * Entrées (sources) → briques construites au centre → sorties (destinataires).
- * - cliquer un élément le débranche / le rebranche ;
+ * - cliquer un élément le retire (il revient dans le menu « + ») ;
  * - la case « + » sous chaque colonne ouvre un menu pour choisir l'élément à brancher ;
  * - les fils sont tracés en SVG d'après la position réelle des éléments.
  */
@@ -25,28 +25,28 @@ const bars = [40, 55, 48, 72, 94];
       </span>
     </span>
   </div>
-  <p class="sr-only">Schéma interactif : vos sources (CRM, logiciels métier, e-mails, et d'autres à ajouter) alimentent des briques sur mesure (tableau de bord, portail client, et d'autres à ajouter : plateforme de formation, assistant IA, application mobile…), qui servent la direction, les équipes et les clients. Chaque élément peut être branché ou débranché.</p>
+  <p class="sr-only">Schéma interactif : vos sources (CRM, logiciels métier, e-mails, et d'autres à ajouter) alimentent des briques sur mesure (tableau de bord, portail client, et d'autres à ajouter : plateforme de formation, assistant IA, application mobile…), qui servent la direction, les équipes et les clients. Chaque élément peut être ajouté ou retiré.</p>
 
   <div class="flow" data-flow>
     <svg class="wires" aria-hidden="true" data-svg></svg>
 
     <div class="col col--in" data-col="in" data-more={JSON.stringify(inputsMore)}>
       <span class="lbl mono">ENTRÉES</span>
-      {inputs.map((s) => <button type="button" class="node node--in" aria-pressed="true" data-node="in">{s}</button>)}
+      {inputs.map((s) => <button type="button" class="node node--in" data-node="in">{s}</button>)}
       <button type="button" class="slot" data-slot="in" aria-expanded="false" aria-haspopup="true" aria-label="Brancher une source">+ Brancher</button>
       <div class="menu" data-menu="in" hidden></div>
     </div>
 
     <div class="core" data-core data-col="mod" data-more={JSON.stringify(modulesMore)}>
       <span class="lbl mono">CE QUE JE CONSTRUIS</span>
-      {modules.map((m) => <button type="button" class="mod" aria-pressed="true" data-mod>{m}</button>)}
+      {modules.map((m) => <button type="button" class="mod" data-mod>{m}</button>)}
       <button type="button" class="slot slot--mod" data-slot="mod" aria-expanded="false" aria-haspopup="true" aria-label="Ajouter une brique">+ Ajouter</button>
       <div class="menu menu--mod" data-menu="mod" hidden></div>
     </div>
 
     <div class="col col--out" data-col="out" data-more={JSON.stringify(outputsMore)}>
       <span class="lbl mono">SORTIES</span>
-      {outputs.map((s) => <button type="button" class="node node--out" aria-pressed="true" data-node="out">{s}</button>)}
+      {outputs.map((s) => <button type="button" class="node node--out" data-node="out">{s}</button>)}
       <button type="button" class="slot" data-slot="out" aria-expanded="false" aria-haspopup="true" aria-label="Ajouter un destinataire">+ Ajouter</button>
       <div class="menu" data-menu="out" hidden></div>
     </div>
@@ -75,26 +75,41 @@ const bars = [40, 55, 48, 72, 94];
     const core = panel.querySelector<HTMLElement>('[data-core]')!;
     const status = panel.querySelector<HTMLElement>('[data-status]')!;
 
-    const pressed = (el: Element) => el.getAttribute('aria-pressed') === 'true';
-    const toggle = (el: Element) => { el.setAttribute('aria-pressed', String(!pressed(el))); draw(); };
-
-    function bindNode(el: HTMLElement) { el.addEventListener('click', () => toggle(el)); }
-    panel.querySelectorAll<HTMLElement>('[data-node], [data-mod]').forEach(bindNode);
-
-    // Cases « + » : ouvrent un menu pour choisir l'élément à brancher
+    // Cases « + » : ouvrent un menu pour choisir l'élément à brancher.
+    // Cliquer un élément branché le retire, et il revient dans le menu.
+    type Side = 'in' | 'out' | 'mod';
     const cid = [...panel.getAttributeNames()].filter((a) => a.startsWith('data-astro-cid'));
     const scope = (el: Element) => cid.forEach((a) => el.setAttribute(a, ''));
+    const pools: Record<string, string[]> = {};
+    const renders: Record<string, () => void> = {};
     const menus: { slot: HTMLButtonElement; menu: HTMLElement }[] = [];
+    const sideOf = (el: HTMLElement): Side => (el.dataset.node as Side) || 'mod';
+
+    function bindNode(el: HTMLElement) {
+      el.setAttribute('aria-label', `Retirer : ${el.textContent?.trim()}`);
+      el.title = 'Cliquer pour retirer';
+      el.addEventListener('click', () => {
+        const side = sideOf(el);
+        const label = el.textContent?.trim() || '';
+        const slot = panel.querySelector<HTMLElement>(`[data-slot="${side}"]`);
+        el.remove();
+        if (label && !pools[side].includes(label)) pools[side].unshift(label);
+        renders[side]();
+        draw();
+        slot?.focus();
+      });
+    }
     function closeAll(except?: HTMLElement) {
       menus.forEach(({ slot, menu }) => { if (menu !== except) { menu.hidden = true; slot.setAttribute('aria-expanded', 'false'); } });
     }
     for (const slot of panel.querySelectorAll<HTMLButtonElement>('[data-slot]')) {
-      const side = slot.dataset.slot as 'in' | 'out' | 'mod';
+      const side = slot.dataset.slot as Side;
       const col = panel.querySelector<HTMLElement>(`[data-col="${side}"]`)!;
       const menu = panel.querySelector<HTMLElement>(`[data-menu="${side}"]`)!;
-      const pool: string[] = JSON.parse(col.dataset.more || '[]');
+      pools[side] = JSON.parse(col.dataset.more || '[]');
       menus.push({ slot, menu });
       const render = () => {
+        const pool = pools[side];
         menu.replaceChildren();
         for (const item of pool) {
           const opt = document.createElement('button');
@@ -105,7 +120,7 @@ const bars = [40, 55, 48, 72, 94];
             b.type = 'button';
             if (side === 'mod') { b.className = 'mod node--new'; b.dataset.mod = ''; }
             else { b.className = `node node--${side} node--new`; b.dataset.node = side; }
-            b.setAttribute('aria-pressed', 'true'); b.textContent = item; scope(b);
+            b.textContent = item; scope(b);
             col.insertBefore(b, slot);
             bindNode(b);
             menu.hidden = true; slot.setAttribute('aria-expanded', 'false');
@@ -118,6 +133,7 @@ const bars = [40, 55, 48, 72, 94];
         other.textContent = side === 'in' ? 'Un autre outil ? Écrivez-moi →' : side === 'mod' ? 'Autre chose en tête ? Écrivez-moi →' : 'Quelqu’un d’autre ? Écrivez-moi →';
         menu.appendChild(other);
       };
+      renders[side] = render;
       render();
       slot.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -129,6 +145,7 @@ const bars = [40, 55, 48, 72, 94];
       });
       menu.addEventListener('click', (e) => e.stopPropagation());
     }
+    panel.querySelectorAll<HTMLElement>('[data-node], [data-mod]').forEach(bindNode);
     document.addEventListener('click', () => closeAll());
     panel.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
@@ -156,15 +173,15 @@ const bars = [40, 55, 48, 72, 94];
       const outs = [...panel.querySelectorAll('[data-node="out"]')];
       const mods = [...panel.querySelectorAll('[data-mod]')];
       const cr = core.getBoundingClientRect();
-      const nIn = ins.filter(pressed).length, nMod = mods.filter(pressed).length, nOut = outs.filter(pressed).length;
+      const nIn = ins.length, nMod = mods.length;
       const live = nIn > 0 && nMod > 0;
       ins.forEach((el, i) => {
         const y = cr.top - f.top + 30 + (i + 0.5) * ((cr.height - 40) / ins.length);
-        path(center(el, 'r'), { x: cr.left - f.left, y }, pressed(el));
+        path(center(el, 'r'), { x: cr.left - f.left, y }, true);
       });
       outs.forEach((el, i) => {
         const y = cr.top - f.top + 30 + (i + 0.5) * ((cr.height - 40) / outs.length);
-        path({ x: cr.right - f.left, y }, center(el, 'l'), pressed(el) && live);
+        path({ x: cr.right - f.left, y }, center(el, 'l'), live);
       });
       core.classList.toggle('idle', !live);
       panel.style.setProperty('--speed', `${Math.max(0.35, 1.3 - nIn * 0.18)}s`);
@@ -221,7 +238,12 @@ const bars = [40, 55, 48, 72, 94];
   .node { background: #1f1b2e; border: 1px solid #3a3352; }
   .node:hover, .mod:hover { border-color: var(--violet-light); }
   .node--out { border-color: var(--orange); box-shadow: 0 0 12px rgb(255 107 26 / .25); }
-  .node[aria-pressed='false'] { opacity: .45; text-decoration: line-through; box-shadow: none; border-color: #3a3352; }
+  .node::after, .mod::after {
+    content: '×'; position: absolute; right: .45rem; top: 50%; transform: translateY(-50%);
+    font-size: 1rem; line-height: 1; opacity: 0; transition: opacity .15s; color: var(--orange-light);
+  }
+  .mod::after { color: var(--orange-text); }
+  .node:hover::after, .mod:hover::after, .node:focus-visible::after, .mod:focus-visible::after { opacity: 1; }
   .node--new { animation: pop .35s cubic-bezier(.3, 1.6, .5, 1); }
   .slot {
     background: transparent; border: 1.5px dashed #5a5275; color: #b9b2d6; font-weight: 500;
@@ -250,8 +272,7 @@ const bars = [40, 55, 48, 72, 94];
     animation: glow 2.6s ease-in-out infinite; transition: background .3s;
   }
   .core .lbl { color: var(--violet-light); text-align: center; margin-bottom: .1rem; }
-  .mod { background: rgb(255 255 255 / .08); border: 1px solid rgb(255 255 255 / .16); text-align: center; }
-  .mod[aria-pressed='true'] { background: #fff; color: var(--ink); border-color: #fff; }
+  .mod { background: #fff; color: var(--ink); border: 1px solid #fff; text-align: center; }
   .core.idle { animation: none; background: #24203a; box-shadow: none; }
 
   .bottom { display: grid; grid-template-columns: 1fr 1.25fr; gap: .7rem; margin-top: 1.3rem; }
