@@ -15,7 +15,7 @@ const { entry, all } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
 const others = all.filter((p) => p.id !== entry.id);
-const label = d.kind === 'entree' ? 'Étape 0 · diagnostic' : d.kind === 'visibilite' ? 'Option · visibilité' : `${d.mk} · ${d.entries === 4 ? '3 entrées et +' : d.entries + (d.entries === 1 ? ' entrée' : ' entrées')}`;
+const label = d.kind === 'entree' ? 'Pour commencer · diagnostic' : d.kind === 'visibilite' ? 'Option · visibilité' : (d.entries === 4 ? '3 outils et +' : d.entries === 1 ? '1 outil' : `${d.entries} outils reliés`);
 
 const schema = {
   '@context': 'https://schema.org',
@@ -97,7 +97,7 @@ const schema = {
       <div class="grid others">
         {others.map((p) => (
           <a class="card card--link" href={`/gammes/${p.id}/`}>
-            <span class="mono k">{p.data.mk ?? (p.data.kind === 'entree' ? 'ÉTAPE 0' : 'OPTION')}</span>
+            <span class="mono k">{p.data.kind === 'entree' ? 'POUR COMMENCER' : p.data.kind === 'visibilite' ? 'OPTION' : 'GAMME'}</span>
             <h3>{p.data.name}</h3>
             <p>{p.data.short}</p>
             <span class="more">Découvrir <Icon name="arrow" size={16} /></span>

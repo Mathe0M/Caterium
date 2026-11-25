@@ -9,7 +9,7 @@ kind: outil
 entries: 2
 mk: "MK.2"
 recommended: true
-tagline: "2 entrées → 1 sortie. Deux outils qui travaillent ensemble."
+tagline: "Deux outils qui travaillent enfin ensemble."
 short: "Deux outils qui se parlent enfin, des données centralisées."
 price: "À partir de 3 500 €"
 duration: "3 à 6 semaines"

@@ -8,7 +8,7 @@ order: 1
 kind: outil
 entries: 1
 mk: "MK.1"
-tagline: "1 entrée → 1 sortie. Une tâche qui se fait toute seule."
+tagline: "Une tâche répétitive qui se fait toute seule."
 short: "Une tâche répétitive, automatisée de bout en bout."
 price: "À partir de 1 200 €"
 duration: "1 à 3 semaines"
@@ -38,7 +38,7 @@ faq:
 
 ## Le temps perdu ne se voit sur aucune facture
 
-Dix minutes pour recopier des commandes, vingt pour mettre à jour un tableau, une heure le vendredi pour le reporting. Pris un par un, rien de grave. Additionné sur un an et sur toute une équipe, c'est souvent **plusieurs semaines de travail** consacrées à des tâches qu'une machine fait mieux.
+Dix minutes pour recopier des commandes, vingt pour mettre à jour un tableau, une heure le vendredi pour le reporting. Pris un par un, rien de grave. Additionné sur un an et sur toute une équipe, c'est souvent **plusieurs semaines de travail** consacrées à des tâches qu'un outil ferait très bien à votre place.
 
 ## Ce qu'un Constructor peut prendre en charge
 

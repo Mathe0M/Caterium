@@ -9,7 +9,7 @@ const variant = (i: number) => ['', 'gcard--violet', 'gcard--orange'][i] ?? '';
     <a class={`gcard ${variant(i)} card--link`} href={`/gammes/${g.id}/`}>
       <div class="gcard__in">
         <div class="top">
-          <span class="mono k">{g.data.mk} · {g.data.entries === 4 ? '3 entrées et +' : `${g.data.entries} entrée${(g.data.entries ?? 1) > 1 ? 's' : ''}`}</span>
+          <span class="mono k">{g.data.entries === 4 ? '3 outils et +' : g.data.entries === 1 ? '1 outil' : `${g.data.entries} outils reliés`}</span>
           {g.data.recommended && <span class="reco">Recommandée</span>}
         </div>
         <span class="ports" aria-hidden="true">{Array.from({ length: g.data.entries ?? 1 }).map(() => <i></i>)}</span>

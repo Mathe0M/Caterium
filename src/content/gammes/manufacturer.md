@@ -8,7 +8,7 @@ order: 3
 kind: outil
 entries: 4
 mk: "MK.3"
-tagline: "3 entrées ou plus → 1 outil complet. Votre usine numérique."
+tagline: "Un outil complet, pensé pour votre façon de travailler."
 short: "Votre logiciel métier complet, relié à tout le reste."
 price: "À partir de 7 500 €"
 duration: "2 à 6 mois, par étapes"
