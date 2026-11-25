@@ -53,9 +53,9 @@ const outputsMore = ['Expert-comptable', 'Fournisseurs', 'Commerciaux', 'Service
 
   <div class="bottom">
     <ul class="promises">
-      <li><span aria-hidden="true">✓</span> Chaque information saisie une seule fois</li>
-      <li><span aria-hidden="true">✓</span> Des tâches qui se lancent toutes seules</li>
-      <li><span aria-hidden="true">✓</span> Des réponses IA adaptées à votre métier</li>
+      <li><span aria-hidden="true">✓</span> Une seule saisie</li>
+      <li><span aria-hidden="true">✓</span> Tâches automatisées</li>
+      <li><span aria-hidden="true">✓</span> IA à votre métier</li>
     </ul>
   </div>
 </div>
@@ -271,8 +271,8 @@ const outputsMore = ['Expert-comptable', 'Fournisseurs', 'Commerciaux', 'Service
   .core.idle { animation: none; background: #24203a; box-shadow: none; }
 
   .bottom { margin-top: 1.3rem; }
-  .promises { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; font-size: .86rem; }
-  .promises li { background: #1f1b2e; border-radius: 10px; padding: .55rem .7rem; }
+  .promises { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .5rem; font-size: .82rem; font-weight: 600; }
+  .promises li { background: #1f1b2e; border-radius: 10px; padding: .6rem .45rem; white-space: nowrap; text-align: center; }
   .promises span { color: var(--orange-light); font-weight: 700; }
   .hint { font-size: .66rem; color: #8f88aa; margin: .9rem 0 0; text-align: right; }
 
