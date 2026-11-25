@@ -12,7 +12,6 @@ const modules = ['Tableau de bord', 'Assistant IA', 'Portail client'];
 const modulesMore = ['Plateforme de formation', 'Application mobile', 'Plugin de navigateur', 'Carte interactive', 'Générateur de documents'];
 const outputs = ['Direction', 'Équipes', 'Clients'];
 const outputsMore = ['Expert-comptable', 'Fournisseurs', 'Commerciaux', 'Service client', 'Partenaires'];
-const bars = [40, 55, 48, 72, 94];
 ---
 <div class="panel" data-panel>
   <div class="head mono">
@@ -53,14 +52,10 @@ const bars = [40, 55, 48, 72, 94];
   </div>
 
   <div class="bottom">
-    <div class="chart" aria-hidden="true">
-      <span class="mono lbl">ACTIVITÉ DE LA SEMAINE</span>
-      <div class="bars">{bars.map((h, i) => <i class={i > 2 ? 'hot' : ''} style={`--h:${h}%`}></i>)}</div>
-    </div>
     <ul class="promises">
       <li><span aria-hidden="true">✓</span> Chaque information saisie une seule fois</li>
       <li><span aria-hidden="true">✓</span> Des tâches qui se lancent toutes seules</li>
-      <li><span aria-hidden="true">✓</span> Des réponses IA tirées de vos documents</li>
+      <li><span aria-hidden="true">✓</span> Des réponses IA adaptées à votre métier</li>
     </ul>
   </div>
 </div>
@@ -275,13 +270,8 @@ const bars = [40, 55, 48, 72, 94];
   .mod { background: #fff; color: var(--ink); border: 1px solid #fff; text-align: center; }
   .core.idle { animation: none; background: #24203a; box-shadow: none; }
 
-  .bottom { display: grid; grid-template-columns: 1fr 1.25fr; gap: .7rem; margin-top: 1.3rem; }
-  .chart { background: #1f1b2e; border-radius: 12px; padding: .9rem; }
-  .chart .lbl { color: #b9b2d6; }
-  .bars { display: flex; align-items: flex-end; gap: 6px; height: 72px; margin-top: .6rem; }
-  .bars i { flex: 1; height: var(--h); border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, #a58bff, #6d3bff); }
-  .bars i.hot { background: linear-gradient(180deg, #ffb088, #ff6b1a); }
-  .promises { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .45rem; font-size: .88rem; }
+  .bottom { margin-top: 1.3rem; }
+  .promises { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; font-size: .86rem; }
   .promises li { background: #1f1b2e; border-radius: 10px; padding: .55rem .7rem; }
   .promises span { color: var(--orange-light); font-weight: 700; }
   .hint { font-size: .66rem; color: #8f88aa; margin: .9rem 0 0; text-align: right; }
@@ -295,7 +285,7 @@ const bars = [40, 55, 48, 72, 94];
     .flow { grid-template-columns: 1fr 1.1fr 1fr; gap: 1.1rem; }
     .node, .slot, .mod { font-size: .72rem; padding: .45rem .45rem; }
     .lbl { font-size: .55rem; }
-    .bottom { grid-template-columns: 1fr; }
+    .promises { grid-template-columns: 1fr; }
     .hint { text-align: left; }
   }
 </style>
