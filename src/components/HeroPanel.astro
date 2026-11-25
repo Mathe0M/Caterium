@@ -1,32 +1,46 @@
 ---
 /**
- * Panneau « usine » de l'accueil : vos sources se branchent sur votre outil.
- * Cliquer une source la débranche / la rebranche ; le compteur suit.
+ * Panneau « usine » de l'accueil.
+ * Entrées (sources) → briques construites au centre → sorties (destinataires).
+ * - cliquer un élément le débranche / le rebranche ;
+ * - la case « + » sous chaque colonne branche l'élément suivant ;
+ * - les fils sont tracés en SVG d'après la position réelle des éléments.
  */
-const sources = ['Tableurs', 'Logiciels métier', 'E-mails'];
+const inputs = ['Tableurs', 'Logiciels métier', 'E-mails'];
+const inputsMore = ['Site internet', 'CRM'];
+const modules = ['Tableau de bord', 'Assistant IA', 'Automatisations', 'Alertes'];
+const outputs = ['Direction', 'Équipes', 'Clients'];
+const outputsMore = ['Expert-comptable', 'Fournisseurs'];
 const bars = [40, 55, 48, 72, 94];
 ---
 <div class="panel" data-panel>
   <div class="head mono">
     <span>VOTRE ENTREPRISE · EXEMPLE</span>
-    <span class="status">● EN PRODUCTION</span>
+    <span class="status" data-status>● EN PRODUCTION</span>
   </div>
-  <p class="sr-only">Exemple : vos tableurs, logiciels métier et e-mails sont reliés à un outil central, qui alimente un tableau de bord et un assistant IA. Chaque source peut être débranchée ou rebranchée.</p>
-  <div class="flow">
-    <div class="col">
-      {sources.map((s) => <button type="button" class="src" aria-pressed="true" data-src>{s}</button>)}
+  <p class="sr-only">Exemple interactif : vos sources (tableurs, logiciels métier, e-mails, et d'autres à ajouter) alimentent des briques sur mesure (tableau de bord, assistant IA, automatisations, alertes), qui servent la direction, les équipes et les clients. Chaque élément peut être branché ou débranché.</p>
+
+  <div class="flow" data-flow>
+    <svg class="wires" aria-hidden="true" data-svg></svg>
+
+    <div class="col col--in" data-col="in" data-more={JSON.stringify(inputsMore)}>
+      <span class="lbl mono">ENTRÉES</span>
+      {inputs.map((s) => <button type="button" class="node node--in" aria-pressed="true" data-node="in">{s}</button>)}
+      <button type="button" class="slot" data-slot="in"></button>
     </div>
-    <div class="wires" aria-hidden="true">{sources.map(() => <span class="flow-wire on" data-wire></span>)}</div>
-    <div class="core" aria-hidden="true">
-      <strong>Votre outil</strong>
-      <span class="mono"><span data-count>3</span>/3 sources reliées</span>
+
+    <div class="core" data-core>
+      <span class="lbl mono">CE QUE JE CONSTRUIS</span>
+      {modules.map((m, i) => <button type="button" class="mod" aria-pressed={i < 2 ? 'true' : 'false'} data-mod>{m}</button>)}
     </div>
-    <div class="wires wires--out" aria-hidden="true"><span class="flow-wire on" data-out></span><span class="flow-wire on" data-out></span></div>
-    <div class="col">
-      <span class="out">Tableau de bord</span>
-      <span class="out">Assistant IA</span>
+
+    <div class="col col--out" data-col="out" data-more={JSON.stringify(outputsMore)}>
+      <span class="lbl mono">SORTIES</span>
+      {outputs.map((s) => <button type="button" class="node node--out" aria-pressed="true" data-node="out">{s}</button>)}
+      <button type="button" class="slot" data-slot="out"></button>
     </div>
   </div>
+
   <div class="bottom">
     <div class="chart" aria-hidden="true">
       <span class="mono lbl">ACTIVITÉ DE LA SEMAINE</span>
@@ -38,87 +52,162 @@ const bars = [40, 55, 48, 72, 94];
       <li><span aria-hidden="true">✓</span> Des réponses IA tirées de vos documents</li>
     </ul>
   </div>
-  <p class="hint mono" aria-hidden="true">Cliquez une source pour la débrancher</p>
+  <p class="hint mono" aria-hidden="true" data-count></p>
 </div>
 
 <script>
+  const NS = 'http://www.w3.org/2000/svg';
   for (const panel of document.querySelectorAll<HTMLElement>('[data-panel]')) {
     if (panel.dataset.ready) continue;
     panel.dataset.ready = '1';
-    const srcs = [...panel.querySelectorAll<HTMLButtonElement>('[data-src]')];
-    const wires = [...panel.querySelectorAll<HTMLElement>('[data-wire]')];
-    const outs = [...panel.querySelectorAll<HTMLElement>('[data-out]')];
-    const count = panel.querySelector('[data-count]')!;
-    const core = panel.querySelector<HTMLElement>('.core')!;
-    const sync = () => {
-      const n = srcs.filter((s) => s.getAttribute('aria-pressed') === 'true').length;
-      count.textContent = String(n);
-      outs.forEach((o) => o.classList.toggle('on', n > 0));
-      core.classList.toggle('idle', n === 0);
-      panel.style.setProperty('--speed', `${[0, 1.4, 1, .7][n]}s`);
-    };
-    srcs.forEach((s, i) => s.addEventListener('click', () => {
-      const on = s.getAttribute('aria-pressed') !== 'true';
-      s.setAttribute('aria-pressed', String(on));
-      wires[i].classList.toggle('on', on);
-      sync();
-    }));
-    sync();
+    const flow = panel.querySelector<HTMLElement>('[data-flow]')!;
+    const svg = panel.querySelector<SVGSVGElement>('[data-svg]')!;
+    const core = panel.querySelector<HTMLElement>('[data-core]')!;
+    const countEl = panel.querySelector<HTMLElement>('[data-count]')!;
+    const status = panel.querySelector<HTMLElement>('[data-status]')!;
+
+    const pressed = (el: Element) => el.getAttribute('aria-pressed') === 'true';
+    const toggle = (el: Element) => { el.setAttribute('aria-pressed', String(!pressed(el))); draw(); };
+
+    function bindNode(el: HTMLElement) { el.addEventListener('click', () => toggle(el)); }
+    panel.querySelectorAll<HTMLElement>('[data-node], [data-mod]').forEach(bindNode);
+
+    // Cases « + » : branchent l'élément suivant de la réserve
+    for (const slot of panel.querySelectorAll<HTMLButtonElement>('[data-slot]')) {
+      const side = slot.dataset.slot as 'in' | 'out';
+      const col = panel.querySelector<HTMLElement>(`[data-col="${side}"]`)!;
+      const pool: string[] = JSON.parse(col.dataset.more || '[]');
+      const label = () => {
+        if (pool.length) { slot.textContent = `+ ${pool[0]}`; slot.setAttribute('aria-label', `Brancher : ${pool[0]}`); }
+        else { slot.textContent = side === 'in' ? '+ Votre outil ?' : '+ Qui d’autre ?'; slot.setAttribute('aria-label', 'Un autre élément à brancher ? Écrivez-moi'); }
+      };
+      slot.addEventListener('click', () => {
+        if (!pool.length) { location.href = '/contact/'; return; }
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = `node node--${side} node--new`;
+        b.setAttribute('aria-pressed', 'true');
+        b.dataset.node = side;
+        b.textContent = pool.shift()!;
+        // reprend l'attribut de portée du composant pour le style
+        for (const a of slot.getAttributeNames()) if (a.startsWith('data-astro-cid')) b.setAttribute(a, '');
+        col.insertBefore(b, slot);
+        bindNode(b);
+        label();
+        draw();
+      });
+      label();
+    }
+
+    function center(el: Element, side: 'l' | 'r') {
+      const f = flow.getBoundingClientRect(), r = el.getBoundingClientRect();
+      return { x: (side === 'r' ? r.right : r.left) - f.left, y: r.top + r.height / 2 - f.top };
+    }
+    function path(a: { x: number; y: number }, b: { x: number; y: number }, on: boolean) {
+      const p = document.createElementNS(NS, 'path');
+      const dx = (b.x - a.x) * 0.55;
+      p.setAttribute('d', `M${a.x} ${a.y} C${a.x + dx} ${a.y} ${b.x - dx} ${b.y} ${b.x} ${b.y}`);
+      p.setAttribute('class', on ? 'flow-wire on' : 'flow-wire');
+      svg.appendChild(p);
+    }
+
+    function draw() {
+      const f = flow.getBoundingClientRect();
+      svg.setAttribute('viewBox', `0 0 ${f.width} ${f.height}`);
+      svg.replaceChildren();
+      const ins = [...panel.querySelectorAll('[data-node="in"]')];
+      const outs = [...panel.querySelectorAll('[data-node="out"]')];
+      const mods = [...panel.querySelectorAll('[data-mod]')];
+      const cr = core.getBoundingClientRect();
+      const nIn = ins.filter(pressed).length, nMod = mods.filter(pressed).length, nOut = outs.filter(pressed).length;
+      const live = nIn > 0 && nMod > 0;
+      ins.forEach((el, i) => {
+        const y = cr.top - f.top + 30 + (i + 0.5) * ((cr.height - 40) / ins.length);
+        path(center(el, 'r'), { x: cr.left - f.left, y }, pressed(el));
+      });
+      outs.forEach((el, i) => {
+        const y = cr.top - f.top + 30 + (i + 0.5) * ((cr.height - 40) / outs.length);
+        path({ x: cr.right - f.left, y }, center(el, 'l'), pressed(el) && live);
+      });
+      core.classList.toggle('idle', !live);
+      panel.style.setProperty('--speed', `${Math.max(0.35, 1.3 - nIn * 0.18)}s`);
+      status.textContent = live ? '● EN PRODUCTION' : '○ EN ATTENTE';
+      status.classList.toggle('off', !live);
+      countEl.textContent = `${nIn} source${nIn > 1 ? 's' : ''} → ${nMod} brique${nMod > 1 ? 's' : ''} → ${nOut} destinataire${nOut > 1 ? 's' : ''} · cliquez pour brancher ou débrancher`;
+    }
+
+    draw();
+    new ResizeObserver(draw).observe(flow);
+    document.fonts?.ready.then(draw);
   }
 </script>
 
 <style>
   .panel {
-    --speed: .7s;
+    --speed: .8s;
     background: var(--ink); color: #fff; border-radius: 22px; padding: 1.4rem;
     box-shadow: 0 30px 60px -30px rgb(18 16 26 / .6);
   }
-  .head { display: flex; justify-content: space-between; gap: 1rem; font-size: .75rem; color: #b9b2d6; margin-bottom: 1.4rem; }
+  .head { display: flex; justify-content: space-between; gap: 1rem; font-size: .75rem; color: #b9b2d6; margin-bottom: 1.2rem; }
   .status { color: var(--ok); }
-  .flow { display: grid; grid-template-columns: 1fr 56px minmax(110px, .9fr) 56px 1fr; align-items: center; }
-  .col { display: flex; flex-direction: column; gap: .7rem; }
-  .src, .out {
-    font: 600 .9rem/1.2 var(--font-text); text-align: left; color: #fff;
-    background: #1f1b2e; border: 1px solid #3a3352; border-radius: 10px; padding: .65rem .75rem;
+  .status.off { color: #b9b2d6; }
+
+  .flow { position: relative; display: grid; grid-template-columns: 1fr minmax(140px, 1.15fr) 1fr; gap: 2.4rem; align-items: center; }
+  .wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  .wires :global(.flow-wire) { fill: none; stroke: #3a3352; stroke-width: 2.5; }
+  .wires :global(.flow-wire.on) {
+    stroke: var(--orange); stroke-dasharray: 9 5; animation: wire var(--speed) linear infinite;
+    filter: drop-shadow(0 0 3px rgb(255 107 26 / .9));
   }
-  .src { cursor: pointer; transition: opacity .2s, border-color .2s; }
-  .src:hover { border-color: var(--violet-light); }
-  .src[aria-pressed='false'] { opacity: .45; text-decoration: line-through; }
-  .out { border-color: var(--orange); box-shadow: 0 0 14px rgb(255 107 26 / .3); }
-  .wires { display: flex; flex-direction: column; justify-content: space-around; gap: 2.15rem; padding: 0 6px; }
-  .wires--out { gap: 3.4rem; }
-  .flow-wire { height: 3px; background: #3a3352; display: block; }
-  .flow-wire.on {
-    background: repeating-linear-gradient(90deg, var(--orange) 0 10px, transparent 10px 14px);
-    background-size: 28px 3px; animation: flow var(--speed) linear infinite;
-    filter: drop-shadow(0 0 4px rgb(255 107 26 / .9));
+  @keyframes wire { to { stroke-dashoffset: -28; } }
+
+  .lbl { font-size: .62rem; color: #8f88aa; letter-spacing: .06em; }
+  .col { position: relative; display: flex; flex-direction: column; gap: .55rem; }
+  .node, .slot, .mod {
+    position: relative; font: 600 .86rem/1.2 var(--font-text); text-align: left; color: #fff; cursor: pointer;
+    border-radius: 10px; padding: .6rem .7rem; transition: opacity .2s, border-color .2s, background .2s;
   }
+  .node { background: #1f1b2e; border: 1px solid #3a3352; }
+  .node:hover, .mod:hover { border-color: var(--violet-light); }
+  .node--out { border-color: var(--orange); box-shadow: 0 0 12px rgb(255 107 26 / .25); }
+  .node[aria-pressed='false'] { opacity: .45; text-decoration: line-through; box-shadow: none; border-color: #3a3352; }
+  .node--new { animation: pop .35s cubic-bezier(.3, 1.6, .5, 1); }
+  .slot {
+    background: transparent; border: 1.5px dashed #5a5275; color: #b9b2d6; font-weight: 500;
+  }
+  .slot:hover { border-color: var(--orange-light); color: #fff; }
+
   .core {
-    aspect-ratio: 1; border-radius: 20px; background: #2a1a6e; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; text-align: center; gap: .4rem; padding: .6rem;
+    position: relative; border-radius: 18px; background: #2a1a6e; padding: .8rem .7rem;
+    display: flex; flex-direction: column; gap: .45rem;
     animation: glow 2.6s ease-in-out infinite; transition: background .3s;
   }
-  .core strong { font-family: var(--font-title); font-size: 1.1rem; }
-  .core .mono { font-size: .68rem; color: var(--violet-light); }
+  .core .lbl { color: var(--violet-light); text-align: center; margin-bottom: .1rem; }
+  .mod { background: rgb(255 255 255 / .08); border: 1px solid rgb(255 255 255 / .16); text-align: center; }
+  .mod[aria-pressed='true'] { background: #fff; color: var(--ink); border-color: #fff; }
   .core.idle { animation: none; background: #24203a; box-shadow: none; }
-  .bottom { display: grid; grid-template-columns: 1fr 1.25fr; gap: .7rem; margin-top: 1.4rem; }
+
+  .bottom { display: grid; grid-template-columns: 1fr 1.25fr; gap: .7rem; margin-top: 1.3rem; }
   .chart { background: #1f1b2e; border-radius: 12px; padding: .9rem; }
-  .lbl { font-size: .66rem; color: #b9b2d6; }
+  .chart .lbl { color: #b9b2d6; }
   .bars { display: flex; align-items: flex-end; gap: 6px; height: 72px; margin-top: .6rem; }
   .bars i { flex: 1; height: var(--h); border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, #a58bff, #6d3bff); }
   .bars i.hot { background: linear-gradient(180deg, #ffb088, #ff6b1a); }
   .promises { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .45rem; font-size: .88rem; }
   .promises li { background: #1f1b2e; border-radius: 10px; padding: .55rem .7rem; }
   .promises span { color: var(--orange-light); font-weight: 700; }
-  .hint { font-size: .68rem; color: #8f88aa; margin: .9rem 0 0; text-align: right; }
-  @keyframes flow { to { background-position: 28px 0; } }
+  .hint { font-size: .66rem; color: #8f88aa; margin: .9rem 0 0; text-align: right; }
+
+  @keyframes pop { from { transform: scale(.85); opacity: 0; } }
   @keyframes glow {
     0%, 100% { box-shadow: 0 0 0 1px #6d3bff, 0 0 18px rgb(109 59 255 / .55), 0 0 48px rgb(109 59 255 / .25); }
     50% { box-shadow: 0 0 0 1px #6d3bff, 0 0 28px rgb(109 59 255 / .8), 0 0 80px rgb(109 59 255 / .35); }
   }
   @media (max-width: 560px) {
-    .flow { grid-template-columns: 1fr 26px 92px 26px 1fr; }
-    .src, .out { font-size: .78rem; padding: .5rem; }
+    .flow { grid-template-columns: 1fr 1.1fr 1fr; gap: 1.1rem; }
+    .node, .slot, .mod { font-size: .72rem; padding: .45rem .45rem; }
+    .lbl { font-size: .55rem; }
     .bottom { grid-template-columns: 1fr; }
+    .hint { text-align: left; }
   }
 </style>
