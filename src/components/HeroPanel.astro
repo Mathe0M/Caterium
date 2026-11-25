@@ -8,7 +8,8 @@
  */
 const inputs = ['Tableurs', 'Logiciels métier', 'E-mails'];
 const inputsMore = ['Site internet', 'CRM', 'Logiciel de caisse', 'Comptabilité', 'Agenda partagé', 'Formulaires en ligne'];
-const modules = ['Tableau de bord', 'Assistant IA', 'Alertes'];
+const modules = ['Tableau de bord', 'Portail client'];
+const modulesMore = ['Plateforme de formation', 'Assistant IA', 'Application mobile', 'Plugin de navigateur', 'Carte interactive', 'Générateur de documents'];
 const outputs = ['Direction', 'Équipes', 'Clients'];
 const outputsMore = ['Expert-comptable', 'Fournisseurs', 'Commerciaux', 'Service client', 'Partenaires'];
 const bars = [40, 55, 48, 72, 94];
@@ -18,7 +19,7 @@ const bars = [40, 55, 48, 72, 94];
     <span>VOTRE ENTREPRISE · EXEMPLE</span>
     <span class="status" data-status>● EN PRODUCTION</span>
   </div>
-  <p class="sr-only">Exemple interactif : vos sources (tableurs, logiciels métier, e-mails, et d'autres à ajouter) alimentent des briques sur mesure (tableau de bord, assistant IA, alertes), qui servent la direction, les équipes et les clients. Chaque élément peut être branché ou débranché.</p>
+  <p class="sr-only">Exemple interactif : vos sources (tableurs, logiciels métier, e-mails, et d'autres à ajouter) alimentent des briques sur mesure (tableau de bord, portail client, et d'autres à ajouter : plateforme de formation, assistant IA, application mobile…), qui servent la direction, les équipes et les clients. Chaque élément peut être branché ou débranché.</p>
 
   <div class="flow" data-flow>
     <svg class="wires" aria-hidden="true" data-svg></svg>
@@ -30,9 +31,11 @@ const bars = [40, 55, 48, 72, 94];
       <div class="menu" data-menu="in" hidden></div>
     </div>
 
-    <div class="core" data-core>
+    <div class="core" data-core data-col="mod" data-more={JSON.stringify(modulesMore)}>
       <span class="lbl mono">CE QUE JE CONSTRUIS</span>
-      {modules.map((m, i) => <button type="button" class="mod" aria-pressed={i < 2 ? 'true' : 'false'} data-mod>{m}</button>)}
+      {modules.map((m) => <button type="button" class="mod" aria-pressed="true" data-mod>{m}</button>)}
+      <button type="button" class="slot slot--mod" data-slot="mod" aria-expanded="false" aria-haspopup="true" aria-label="Ajouter une brique">+ Ajouter</button>
+      <div class="menu menu--mod" data-menu="mod" hidden></div>
     </div>
 
     <div class="col col--out" data-col="out" data-more={JSON.stringify(outputsMore)}>
@@ -82,7 +85,7 @@ const bars = [40, 55, 48, 72, 94];
       menus.forEach(({ slot, menu }) => { if (menu !== except) { menu.hidden = true; slot.setAttribute('aria-expanded', 'false'); } });
     }
     for (const slot of panel.querySelectorAll<HTMLButtonElement>('[data-slot]')) {
-      const side = slot.dataset.slot as 'in' | 'out';
+      const side = slot.dataset.slot as 'in' | 'out' | 'mod';
       const col = panel.querySelector<HTMLElement>(`[data-col="${side}"]`)!;
       const menu = panel.querySelector<HTMLElement>(`[data-menu="${side}"]`)!;
       const pool: string[] = JSON.parse(col.dataset.more || '[]');
@@ -95,8 +98,10 @@ const bars = [40, 55, 48, 72, 94];
           opt.addEventListener('click', () => {
             pool.splice(pool.indexOf(item), 1);
             const b = document.createElement('button');
-            b.type = 'button'; b.className = `node node--${side} node--new`;
-            b.setAttribute('aria-pressed', 'true'); b.dataset.node = side; b.textContent = item; scope(b);
+            b.type = 'button';
+            if (side === 'mod') { b.className = 'mod node--new'; b.dataset.mod = ''; }
+            else { b.className = `node node--${side} node--new`; b.dataset.node = side; }
+            b.setAttribute('aria-pressed', 'true'); b.textContent = item; scope(b);
             col.insertBefore(b, slot);
             bindNode(b);
             menu.hidden = true; slot.setAttribute('aria-expanded', 'false');
@@ -106,7 +111,7 @@ const bars = [40, 55, 48, 72, 94];
         }
         const other = document.createElement('a');
         other.href = '/contact/'; other.className = 'opt opt--other'; scope(other);
-        other.textContent = side === 'in' ? 'Un autre outil ? Écrivez-moi →' : 'Quelqu’un d’autre ? Écrivez-moi →';
+        other.textContent = side === 'in' ? 'Un autre outil ? Écrivez-moi →' : side === 'mod' ? 'Autre chose en tête ? Écrivez-moi →' : 'Quelqu’un d’autre ? Écrivez-moi →';
         menu.appendChild(other);
       };
       render();
@@ -211,6 +216,8 @@ const bars = [40, 55, 48, 72, 94];
     min-width: 170px;
   }
   .col--out .menu { left: auto; }
+  .slot--mod { text-align: center; border-color: rgb(255 255 255 / .3); }
+  .menu--mod { left: 50%; right: auto; transform: translateX(-50%); }
   .menu[hidden] { display: none; }
   .opt {
     font: 600 .84rem/1.2 var(--font-text); text-align: left; color: var(--ink); background: none; border: 0;
