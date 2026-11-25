@@ -16,10 +16,16 @@ const bars = [40, 55, 48, 72, 94];
 ---
 <div class="panel" data-panel>
   <div class="head mono">
-    <span>VOTRE ENTREPRISE · EXEMPLE</span>
-    <span class="status" data-status>● EN PRODUCTION</span>
+    <span>VOTRE ENTREPRISE</span>
+    <span class="state">
+      <span class="status" data-status>● EN PRODUCTION</span>
+      <span class="info">
+        <button type="button" class="info__btn" aria-describedby="prod-tip" aria-label="En savoir plus">?</button>
+        <span class="info__tip" role="tooltip" id="prod-tip">Rien d'inventé : chacun de ces exemples tourne déjà réellement en production, en entreprise.</span>
+      </span>
+    </span>
   </div>
-  <p class="sr-only">Exemple interactif : vos sources (CRM, logiciels métier, e-mails, et d'autres à ajouter) alimentent des briques sur mesure (tableau de bord, portail client, et d'autres à ajouter : plateforme de formation, assistant IA, application mobile…), qui servent la direction, les équipes et les clients. Chaque élément peut être branché ou débranché.</p>
+  <p class="sr-only">Schéma interactif : vos sources (CRM, logiciels métier, e-mails, et d'autres à ajouter) alimentent des briques sur mesure (tableau de bord, portail client, et d'autres à ajouter : plateforme de formation, assistant IA, application mobile…), qui servent la direction, les équipes et les clients. Chaque élément peut être branché ou débranché.</p>
 
   <div class="flow" data-flow>
     <svg class="wires" aria-hidden="true" data-svg></svg>
@@ -183,6 +189,21 @@ const bars = [40, 55, 48, 72, 94];
   }
   .head { display: flex; justify-content: space-between; gap: 1rem; font-size: .75rem; color: #b9b2d6; margin-bottom: 1.2rem; }
   .status { color: var(--ok); }
+  .state { display: inline-flex; align-items: center; gap: .45rem; }
+  .info { position: relative; display: inline-flex; }
+  .info__btn {
+    width: 18px; height: 18px; border-radius: 50%; border: 1px solid #5a5275; background: #1f1b2e;
+    color: #d6d0ec; font: 700 .7rem/1 var(--font-mono); cursor: help; padding: 0; display: grid; place-items: center;
+  }
+  .info__btn:hover, .info__btn:focus-visible { border-color: var(--ok); color: #fff; }
+  .info__tip {
+    position: absolute; z-index: 6; right: -6px; top: calc(100% + 10px); width: 240px;
+    background: #fff; color: var(--ink); font: 500 .82rem/1.45 var(--font-text); letter-spacing: 0; text-transform: none;
+    padding: .7rem .8rem; border-radius: 10px; box-shadow: 0 18px 40px -12px rgb(0 0 0 / .6);
+    opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .15s, transform .15s, visibility .15s;
+  }
+  .info__tip::before { content: ''; position: absolute; right: 10px; top: -6px; border: 6px solid transparent; border-top: 0; border-bottom-color: #fff; }
+  .info:hover .info__tip, .info__btn:focus + .info__tip { opacity: 1; visibility: visible; transform: none; }
   .status.off { color: #b9b2d6; }
 
   .flow { position: relative; display: grid; grid-template-columns: 1fr minmax(140px, 1.15fr) 1fr; gap: 2.4rem; align-items: center; }
