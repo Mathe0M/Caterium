@@ -5,11 +5,11 @@ import PageHero from '../components/PageHero.astro';
 <Base title="Page introuvable" description="Cette page n'existe pas ou plus." noindex>
   <PageHero
     eyebrow="Erreur 404"
-    title="Cette page a pris la mauvaise boucle"
-    lead="Elle n'existe pas, ou plus. Pas de panique, voici de quoi retrouver votre chemin."
+    title="Aucune ressource détectée <span class='c-orange'>à cet emplacement.</span>"
+    lead="Cette page n'existe pas, ou plus. Relancez le scanner : il trouve toujours quelque chose sur la page d'accueil."
   >
     <div class="btn-row">
-      <a class="btn btn--primary" href="/">Retour à l'accueil</a>
+      <a class="btn btn--primary" href="/">Relancer le scanner →</a>
       <a class="btn btn--ghost" href="/plan-du-site/">Plan du site</a>
     </div>
   </PageHero>

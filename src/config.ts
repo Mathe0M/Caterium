@@ -3,18 +3,18 @@
  * Les valeurs marquées « À COMPLÉTER » doivent être renseignées avant la mise en ligne.
  */
 export const SITE = {
-  name: 'Somerloop',
-  url: 'https://somerloop.fr',
-  tagline: 'Des outils sur mesure pour les PME qui grandissent vite',
+  name: 'Caterium',
+  url: 'https://caterium.fr',
+  tagline: 'Logiciel métier sur mesure pour entreprises en croissance',
   description:
-    "Somerloop conçoit des logiciels métier sur mesure, automatise et connecte les outils des PME en croissance. Agen, Toulouse et toute la France.",
-  email: 'contact@somerloop.fr',
+    "Caterium conçoit des logiciels métier sur mesure, automatise et connecte les outils des entreprises en croissance. Agen, Toulouse et toute la France.",
+  email: 'contact@caterium.fr',
   phone: '', // ex. '06 00 00 00 00' — laisser vide pour ne pas l'afficher
   linkedin: '', // URL du profil LinkedIn
 
   // Porteur de projet
   founder: 'Mathéo', // À COMPLÉTER : prénom et nom tels qu'ils doivent apparaître
-  founderPhoto: '', // ex. '/images/portrait.jpg' (déposer le fichier dans public/images/)
+  founderPhoto: '/images/matheo.webp', // portrait détouré (fond transparent)
 
   // Mentions légales — À COMPLÉTER
   legal: {
@@ -26,6 +26,7 @@ export const SITE = {
     insurer: '[Assureur RC Pro — nom et zone couverte]',
   },
 
+  // Hébergeur — À CONFIRMER (o2switch ou Hostinger)
   host: {
     name: 'O2SWITCH',
     address: 'Chemin des Pardiaux, 63000 Clermont-Ferrand, France',
@@ -35,7 +36,7 @@ export const SITE = {
 
   // Mesure d'audience Matomo sans cookie — laisser vide pour désactiver
   matomo: {
-    url: '', // ex. 'https://stats.somerloop.fr/'
+    url: '', // ex. 'https://stats.caterium.fr/'
     siteId: '1',
   },
 
@@ -43,7 +44,7 @@ export const SITE = {
 };
 
 export const NAV = [
-  { href: '/prestations/', label: 'Prestations' },
+  { href: '/gammes/', label: 'Gammes' },
   { href: '/realisations/', label: 'Réalisations' },
   { href: '/parcours/', label: 'Parcours' },
   { href: '/faq/', label: 'Ressources' },

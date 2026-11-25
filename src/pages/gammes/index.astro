@@ -1,0 +1,146 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import GammeCards from '../../components/GammeCards.astro';
+import Icon from '../../components/Icon.astro';
+import Cta from '../../components/Cta.astro';
+const all = (await getCollection('gammes')).sort((a, b) => a.data.order - b.data.order);
+const outils = all.filter((g) => g.data.kind === 'outil');
+const obs = all.find((g) => g.id === 'observation')!;
+const radar = all.find((g) => g.id === 'radar')!;
+const rows = [
+  { label: 'Ce que ça fait', vals: ['Automatise une tâche', 'Relie deux outils', 'Un logiciel métier complet'] },
+  { label: 'Outils reliés', vals: ['1', '2', '3 et plus'] },
+  { label: 'Délai indicatif', vals: outils.map((g) => g.data.duration) },
+  { label: 'IA si utile', vals: ['Oui', 'Oui', 'Oui'] },
+  { label: 'Tableau de bord', vals: ['—', 'Inclus', 'Inclus'] },
+  { label: 'Maintenance incluse', vals: ['3 mois', '3 mois', '3 mois'] },
+  { label: 'À partir de', vals: outils.map((g) => g.data.price.replace('À partir de ', '')) },
+];
+---
+<Base
+  title="Gammes : automatisation, connexion d'outils et logiciel métier sur mesure"
+  description="Trois gammes selon le nombre d'outils à relier : Constructor (automatisation), Assembler (connexion d'outils), Manufacturer (logiciel métier sur mesure). Plus le diagnostic Observation et l'option visibilité Radar."
+>
+  <PageHero
+    eyebrow="Gammes"
+    title="Plus il y a d'entrées, <span class='c-violet'>plus la machine</span> <span class='c-orange'>est puissante.</span>"
+    lead="Chaque gamme correspond au nombre d'outils que l'on fait travailler ensemble. Vous commencez où vous voulez, et vous montez de gamme quand votre entreprise en a besoin."
+    crumbs={[{ href: '/gammes/', label: 'Gammes' }]}
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <a class="obs card card--link" href="/gammes/observation/">
+        <span class="pill pill--dark">ÉTAPE 0 · OBSERVATION</span>
+        <div class="obs__txt">
+          <h2 class="h3">Pas sûr de la bonne gamme ? On regarde d'abord votre usine d'en haut.</h2>
+          <p>{obs.data.short} <strong>{obs.data.price}.</strong></p>
+        </div>
+        <span class="more">Le diagnostic →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section section--deep">
+    <div class="wrap">
+      <p class="eyebrow">Les trois gammes</p>
+      <h2>Constructor, Assembler, Manufacturer</h2>
+      <div style="margin-top:2rem"><GammeCards /></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Comparatif</p>
+      <h2>Ce qui change d'une gamme à l'autre</h2>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Tableau comparatif des gammes">
+        <table class="cmp">
+          <thead>
+            <tr><th scope="col"><span class="sr-only">Critère</span></th>
+              {outils.map((g) => <th scope="col" class={g.data.recommended ? 'reco' : ''}><a href={`/gammes/${g.id}/`}>{g.data.name}</a>{g.data.recommended && <span class="mono tag">recommandée</span>}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr><th scope="row">{r.label}</th>{r.vals.map((v, i) => <td class={outils[i].data.recommended ? 'reco' : ''}>{v}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="wrap grid grid-2">
+      <div>
+        <p class="eyebrow">Inclus partout</p>
+        <h2 class="h2s">Dans toutes les gammes</h2>
+        <ul class="checklist">
+          <li>Cadrage du besoin avant de coder</li>
+          <li>Hébergement en Europe</li>
+          <li>Double authentification et accès par rôle</li>
+          <li>Documentation et une heure de prise en main</li>
+          <li>Le code source, qui vous appartient</li>
+          <li>3 mois de maintenance après la livraison</li>
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow">Ensuite</p>
+        <h2 class="h2s">Le suivi, sans engagement</h2>
+        <p>Après les 3 mois inclus, vous choisissez : un abonnement de suivi, ou des interventions ponctuelles facturées à l'heure.</p>
+        <div class="subs">
+          <div><strong>150 €</strong><span>/mois</span><p>Surveillance, mises à jour, corrections urgentes</p></div>
+          <div><strong>300 €</strong><span>/mois</span><p>+ petites évolutions régulières</p></div>
+          <div><strong>500 €</strong><span>/mois</span><p>Outil utilisé par toute l'équipe, plus d'évolutions</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <a class="radar card card--link" href="/gammes/radar/">
+        <span class="ico ico--orange"><Icon name="pin" /></span>
+        <div>
+          <span class="pill">OPTION · VISIBILITÉ</span>
+          <h2 class="h3">Radar : être trouvé par vos clients</h2>
+          <p>{radar.data.short} {radar.data.price}. S'ajoute à n'importe quelle gamme, ou se prend seul.</p>
+        </div>
+        <span class="more">Voir Radar →</span>
+      </a>
+    </div>
+  </section>
+
+  <Cta />
+</Base>
+
+<style>
+  .h3 { font-size: 1.5rem; }
+  .h2s { font-size: 1.8rem; }
+  .obs { flex-direction: row; align-items: center; gap: 1.5rem; flex-wrap: wrap; border-style: dashed; }
+  .obs__txt { flex: 1 1 420px; }
+  .obs__txt p { margin: 0; color: var(--ink-soft); }
+  .obs .more { padding: 0; margin: 0; }
+  .table-scroll { overflow-x: auto; margin-top: 2rem; border: 2px solid var(--ink); border-radius: var(--radius-lg); background: var(--surface); }
+  .cmp { width: 100%; border-collapse: collapse; min-width: 640px; }
+  .cmp th, .cmp td { padding: 1rem 1.1rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .cmp tbody tr:last-child > * { border-bottom: 0; font-family: var(--font-title); font-weight: 700; font-size: 1.1rem; }
+  .cmp thead th { font-family: var(--font-title); font-size: 1.3rem; }
+  .cmp thead a { color: var(--ink); text-decoration: none; }
+  .cmp tbody th { font-weight: 500; color: var(--ink-soft); width: 24%; }
+  .cmp .reco { background: var(--violet-soft); }
+  .tag { display: block; font-size: .72rem; color: var(--violet-text); font-weight: 500; margin-top: .2rem; }
+  .subs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; margin-top: 1.2rem; }
+  .subs > div { border: 2px solid var(--ink); border-radius: var(--radius); padding: 1rem; }
+  .subs strong { font-family: var(--font-title); font-size: 1.5rem; }
+  .subs span { color: var(--ink-soft); }
+  .subs p { margin: .4rem 0 0; font-size: .92rem; color: var(--ink-soft); }
+  .radar { flex-direction: row; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+  .radar .ico { margin: 0; flex: none; }
+  .radar > div { flex: 1 1 420px; }
+  .radar p { margin: .4rem 0 0; color: var(--ink-soft); }
+  .radar .more { margin: 0; padding: 0; }
+  @media (max-width: 640px) { .subs { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,96 @@
+---
+/**
+ * Clins d'œil cachés :
+ * - dans la console du navigateur : un mini-jeu (demarrer(), surcadencer(), aide()) ;
+ * - 5 clics rapides sur le logo (page d'accueil) : surcadençage de quelques secondes.
+ */
+---
+<div class="oc-toast" role="status" aria-live="polite"></div>
+
+<script>
+  const w = window as any;
+  if (!w.__caterium) {
+    w.__caterium = true;
+    const toast = document.querySelector<HTMLElement>('.oc-toast');
+    let ocTimer: number | undefined;
+
+    function surcadencer(): string {
+      document.documentElement.classList.add('overclock');
+      if (toast) { toast.textContent = 'Cadence : 250 %'; toast.classList.add('show'); }
+      clearTimeout(ocTimer);
+      ocTimer = window.setTimeout(() => {
+        document.documentElement.classList.remove('overclock');
+        toast?.classList.remove('show');
+      }, 5000);
+      return 'Cadence poussée à 250 %. Retour au régime normal dans 5 secondes.';
+    }
+
+    // 5 clics rapides sur le logo (sur la page d'accueil, où le lien ne mène nulle part de neuf)
+    const brand = document.querySelector<HTMLAnchorElement>('.site-header .brand');
+    let clicks: number[] = [];
+    brand?.addEventListener('click', (e) => {
+      if (location.pathname !== '/') return;
+      e.preventDefault();
+      const now = Date.now();
+      clicks = clicks.filter((t) => now - t < 2000).concat(now);
+      if (clicks.length >= 5) { clicks = []; surcadencer(); }
+    });
+
+    // Console
+    const v = 'color:#6d3bff;font-weight:700', o = 'color:#ff6b1a;font-weight:700', t = 'color:inherit';
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    let running = false;
+
+    async function demarrer() {
+      if (running) return 'La chaîne tourne déjà. Patience, elle est automatisée.';
+      running = true;
+      const steps = [
+        ['Factures', 'lues et classées'],
+        ['CRM', 'contacts dédoublonnés'],
+        ['Stock', 'recompté sans inventaire du samedi'],
+        ['Tableurs', 'remplacés (paix à leur âme)'],
+        ['Assistant IA', 'a lu toute la doc, même les annexes'],
+      ];
+      console.log('%c▶ Mise en route de la chaîne de production…', v);
+      for (let i = 0; i < steps.length; i++) {
+        await sleep(450);
+        const bar = '■'.repeat(i + 1) + '□'.repeat(steps.length - i - 1);
+        console.log(`%c[${bar}]%c ${steps[i][0]} → ${steps[i][1]}`, o, t);
+      }
+      await sleep(500);
+      console.log('%c✔ Production terminée.%c Temps gagné estimé : vos fins de journée.', v, t);
+      console.log('%cLa même chose, mais pour de vrai ?%c Écrivez à contact@caterium.fr', o, t);
+      running = false;
+    }
+
+    function aide() {
+      console.log('%cCommandes disponibles', v);
+      console.log('  demarrer()     lance la chaîne de production');
+      console.log('  surcadencer()  pousse la cadence du site à 250 %');
+      console.log('  aide()         affiche cette aide');
+      return 'Bonne exploration.';
+    }
+
+    w.demarrer = () => { demarrer(); return 'Chaîne lancée…'; };
+    w.surcadencer = surcadencer;
+    w.aide = aide;
+
+    console.log(
+      '%c ◜◝ %ccaterium\n%cVous regardez sous le capot ? Bonne nouvelle, c\'est exactement mon métier.\n%cTapez %cdemarrer()%c pour lancer la chaîne de production, ou %caide()%c.',
+      'color:#ff6b1a;font-size:20px;font-weight:700', 'color:#6d3bff;font-size:20px;font-weight:700;letter-spacing:-1px',
+      'color:inherit;font-size:12px', 'color:inherit', o, 'color:inherit', v, 'color:inherit'
+    );
+  }
+</script>
+
+<style>
+  .oc-toast {
+    position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 90;
+    font-family: var(--font-mono); font-weight: 500; font-size: .95rem;
+    background: var(--ink); color: #fff; border: 2px solid var(--orange);
+    padding: .7rem 1rem; border-radius: 10px;
+    opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity .2s, transform .2s;
+  }
+  .oc-toast:empty { display: none; }
+  .oc-toast.show { opacity: 1; transform: none; }
+</style>

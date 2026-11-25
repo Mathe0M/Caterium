@@ -1,6 +1,6 @@
-# Construit le site et le déploie sur o2switch à chaque push sur main.
+# Construit le site et le déploie (o2switch ou Hostinger, via FTPS) à chaque push sur main.
 # Secrets à créer dans GitHub > Settings > Secrets and variables > Actions :
-#   FTP_SERVER   (ex. ftp.somerloop.fr ou le nom du serveur o2switch)
+#   FTP_SERVER   (ex. ftp.caterium.fr ou le serveur indiqué par l’hébergeur)
 #   FTP_USERNAME (compte FTP dédié, limité au dossier du site)
 #   FTP_PASSWORD
 name: Déploiement
@@ -25,7 +25,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Envoi FTPS vers o2switch
+      - name: Envoi FTPS vers l’hébergeur
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}

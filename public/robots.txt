@@ -3,4 +3,4 @@ Allow: /
 Disallow: /merci/
 Disallow: /contact.php
 
-Sitemap: https://somerloop.fr/sitemap-index.xml
+Sitemap: https://caterium.fr/sitemap-index.xml

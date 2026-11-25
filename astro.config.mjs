@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://somerloop.fr',
+  site: 'https://caterium.fr',
   trailingSlash: 'always',
   build: { format: 'directory' },
   integrations: [

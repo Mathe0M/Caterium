@@ -1,0 +1,124 @@
+---
+/**
+ * Panneau « usine » de l'accueil : vos sources se branchent sur votre outil.
+ * Cliquer une source la débranche / la rebranche ; le compteur suit.
+ */
+const sources = ['Tableurs', 'Logiciels métier', 'E-mails'];
+const bars = [40, 55, 48, 72, 94];
+---
+<div class="panel" data-panel>
+  <div class="head mono">
+    <span>VOTRE ENTREPRISE · EXEMPLE</span>
+    <span class="status">● EN PRODUCTION</span>
+  </div>
+  <p class="sr-only">Exemple : vos tableurs, logiciels métier et e-mails sont reliés à un outil central, qui alimente un tableau de bord et un assistant IA. Chaque source peut être débranchée ou rebranchée.</p>
+  <div class="flow">
+    <div class="col">
+      {sources.map((s) => <button type="button" class="src" aria-pressed="true" data-src>{s}</button>)}
+    </div>
+    <div class="wires" aria-hidden="true">{sources.map(() => <span class="flow-wire on" data-wire></span>)}</div>
+    <div class="core" aria-hidden="true">
+      <strong>Votre outil</strong>
+      <span class="mono"><span data-count>3</span>/3 sources reliées</span>
+    </div>
+    <div class="wires wires--out" aria-hidden="true"><span class="flow-wire on" data-out></span><span class="flow-wire on" data-out></span></div>
+    <div class="col">
+      <span class="out">Tableau de bord</span>
+      <span class="out">Assistant IA</span>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="chart" aria-hidden="true">
+      <span class="mono lbl">ACTIVITÉ DE LA SEMAINE</span>
+      <div class="bars">{bars.map((h, i) => <i class={i > 2 ? 'hot' : ''} style={`--h:${h}%`}></i>)}</div>
+    </div>
+    <ul class="promises">
+      <li><span aria-hidden="true">✓</span> Chaque information saisie une seule fois</li>
+      <li><span aria-hidden="true">✓</span> Des tâches qui se lancent toutes seules</li>
+      <li><span aria-hidden="true">✓</span> Des réponses IA tirées de vos documents</li>
+    </ul>
+  </div>
+  <p class="hint mono" aria-hidden="true">Cliquez une source pour la débrancher</p>
+</div>
+
+<script>
+  for (const panel of document.querySelectorAll<HTMLElement>('[data-panel]')) {
+    if (panel.dataset.ready) continue;
+    panel.dataset.ready = '1';
+    const srcs = [...panel.querySelectorAll<HTMLButtonElement>('[data-src]')];
+    const wires = [...panel.querySelectorAll<HTMLElement>('[data-wire]')];
+    const outs = [...panel.querySelectorAll<HTMLElement>('[data-out]')];
+    const count = panel.querySelector('[data-count]')!;
+    const core = panel.querySelector<HTMLElement>('.core')!;
+    const sync = () => {
+      const n = srcs.filter((s) => s.getAttribute('aria-pressed') === 'true').length;
+      count.textContent = String(n);
+      outs.forEach((o) => o.classList.toggle('on', n > 0));
+      core.classList.toggle('idle', n === 0);
+      panel.style.setProperty('--speed', `${[0, 1.4, 1, .7][n]}s`);
+    };
+    srcs.forEach((s, i) => s.addEventListener('click', () => {
+      const on = s.getAttribute('aria-pressed') !== 'true';
+      s.setAttribute('aria-pressed', String(on));
+      wires[i].classList.toggle('on', on);
+      sync();
+    }));
+    sync();
+  }
+</script>
+
+<style>
+  .panel {
+    --speed: .7s;
+    background: var(--ink); color: #fff; border-radius: 22px; padding: 1.4rem;
+    box-shadow: 0 30px 60px -30px rgb(18 16 26 / .6);
+  }
+  .head { display: flex; justify-content: space-between; gap: 1rem; font-size: .75rem; color: #b9b2d6; margin-bottom: 1.4rem; }
+  .status { color: var(--ok); }
+  .flow { display: grid; grid-template-columns: 1fr 56px minmax(110px, .9fr) 56px 1fr; align-items: center; }
+  .col { display: flex; flex-direction: column; gap: .7rem; }
+  .src, .out {
+    font: 600 .9rem/1.2 var(--font-text); text-align: left; color: #fff;
+    background: #1f1b2e; border: 1px solid #3a3352; border-radius: 10px; padding: .65rem .75rem;
+  }
+  .src { cursor: pointer; transition: opacity .2s, border-color .2s; }
+  .src:hover { border-color: var(--violet-light); }
+  .src[aria-pressed='false'] { opacity: .45; text-decoration: line-through; }
+  .out { border-color: var(--orange); box-shadow: 0 0 14px rgb(255 107 26 / .3); }
+  .wires { display: flex; flex-direction: column; justify-content: space-around; gap: 2.15rem; padding: 0 6px; }
+  .wires--out { gap: 3.4rem; }
+  .flow-wire { height: 3px; background: #3a3352; display: block; }
+  .flow-wire.on {
+    background: repeating-linear-gradient(90deg, var(--orange) 0 10px, transparent 10px 14px);
+    background-size: 28px 3px; animation: flow var(--speed) linear infinite;
+    filter: drop-shadow(0 0 4px rgb(255 107 26 / .9));
+  }
+  .core {
+    aspect-ratio: 1; border-radius: 20px; background: #2a1a6e; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; gap: .4rem; padding: .6rem;
+    animation: glow 2.6s ease-in-out infinite; transition: background .3s;
+  }
+  .core strong { font-family: var(--font-title); font-size: 1.1rem; }
+  .core .mono { font-size: .68rem; color: var(--violet-light); }
+  .core.idle { animation: none; background: #24203a; box-shadow: none; }
+  .bottom { display: grid; grid-template-columns: 1fr 1.25fr; gap: .7rem; margin-top: 1.4rem; }
+  .chart { background: #1f1b2e; border-radius: 12px; padding: .9rem; }
+  .lbl { font-size: .66rem; color: #b9b2d6; }
+  .bars { display: flex; align-items: flex-end; gap: 6px; height: 72px; margin-top: .6rem; }
+  .bars i { flex: 1; height: var(--h); border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, #a58bff, #6d3bff); }
+  .bars i.hot { background: linear-gradient(180deg, #ffb088, #ff6b1a); }
+  .promises { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .45rem; font-size: .88rem; }
+  .promises li { background: #1f1b2e; border-radius: 10px; padding: .55rem .7rem; }
+  .promises span { color: var(--orange-light); font-weight: 700; }
+  .hint { font-size: .68rem; color: #8f88aa; margin: .9rem 0 0; text-align: right; }
+  @keyframes flow { to { background-position: 28px 0; } }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 0 1px #6d3bff, 0 0 18px rgb(109 59 255 / .55), 0 0 48px rgb(109 59 255 / .25); }
+    50% { box-shadow: 0 0 0 1px #6d3bff, 0 0 28px rgb(109 59 255 / .8), 0 0 80px rgb(109 59 255 / .35); }
+  }
+  @media (max-width: 560px) {
+    .flow { grid-template-columns: 1fr 26px 92px 26px 1fr; }
+    .src, .out { font-size: .78rem; padding: .5rem; }
+    .bottom { grid-template-columns: 1fr; }
+  }
+</style>

@@ -10,7 +10,7 @@ import { SITE } from '../config';
 >
   <PageHero
     eyebrow="Contact"
-    title="Parlons de <span class='hl'>votre projet</span>"
+    title="Parlons de <span class='c-violet'>votre</span> <span class='c-orange'>projet.</span>"
     lead="Quelques lignes suffisent. Je vous réponds sous 48 heures ouvrées avec une première piste ou quelques questions. Sans engagement."
     crumbs={[{ href: '/contact/', label: 'Contact' }]}
   />
@@ -41,11 +41,12 @@ import { SITE } from '../config';
           <label for="sujet">Votre besoin</label>
           <select id="sujet" name="sujet">
             <option value="">Je ne sais pas encore</option>
-            <option value="immersion-diagnostic">Immersion et diagnostic</option>
-            <option value="logiciel-metier-sur-mesure">Logiciel métier sur mesure</option>
-            <option value="automatisation-connexion-outils">Automatisation et connexion des outils</option>
-            <option value="seo-technique-visibilite-locale">SEO technique et visibilité locale</option>
-            <option value="suivi-evolution">Suivi et évolution</option>
+            <option value="observation">Observation (diagnostic)</option>
+            <option value="constructor">Constructor (automatiser une tâche)</option>
+            <option value="assembler">Assembler (connecter des outils)</option>
+            <option value="manufacturer">Manufacturer (logiciel métier)</option>
+            <option value="radar">Radar (visibilité)</option>
+            <option value="suivi">Suivi et maintenance</option>
           </select>
         </div>
         <div class="field">
@@ -125,7 +126,7 @@ import { SITE } from '../config';
     font: inherit; color: var(--ink); background: var(--bg); border: 1.5px solid #c9c4b8;
     border-radius: 10px; padding: .75rem .9rem; width: 100%;
   }
-  input:focus, select:focus, textarea:focus { border-color: var(--loop); outline: 3px solid var(--loop-soft); outline-offset: 0; }
+  input:focus, select:focus, textarea:focus { border-color: var(--violet); outline: 3px solid var(--violet-soft); outline-offset: 0; }
   [aria-invalid='true'] { border-color: #b42318; }
   .help { font-size: .9rem; color: var(--ink-soft); margin: 0; }
   .error { color: #b42318; font-weight: 600; margin: 0; }

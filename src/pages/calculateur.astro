@@ -1,0 +1,129 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Cta from '../components/Cta.astro';
+---
+<Base
+  title="Calculateur du temps perdu sur les tâches répétitives"
+  description="Combien vous coûtent vos tâches répétitives ? Calculez en 30 secondes le temps et l'argent perdus chaque année en doubles saisies, copier-coller et exports manuels."
+>
+  <PageHero
+    eyebrow="Outil gratuit"
+    title="Combien vous coûtent <span class='c-violet'>vos tâches</span> <span class='c-orange'>répétitives ?</span>"
+    lead="Quatre réglages, et vous savez combien d'heures et d'euros partent chaque année en doubles saisies, copier-coller et exports manuels. Rien n'est envoyé : tout se calcule dans votre navigateur."
+    crumbs={[{ href: '/calculateur/', label: 'Calculateur' }]}
+  />
+
+  <section class="section">
+    <div class="wrap calc" data-calc>
+      <form class="card inputs" onsubmit="return false">
+        <div class="field">
+          <label for="c-people">Personnes concernées</label>
+          <div class="row"><input id="c-people" type="range" min="1" max="50" value="5" /><output for="c-people" data-out="people">5</output></div>
+        </div>
+        <div class="field">
+          <label for="c-min">Minutes perdues par personne et par jour</label>
+          <p class="help" id="c-min-help">Ressaisies, copier-coller, recherches d'information, exports.</p>
+          <div class="row"><input id="c-min" type="range" min="5" max="180" step="5" value="30" aria-describedby="c-min-help" /><output for="c-min" data-out="min">30 min</output></div>
+        </div>
+        <div class="field">
+          <label for="c-rate">Coût horaire chargé moyen</label>
+          <p class="help" id="c-rate-help">Salaire brut chargé divisé par les heures travaillées. 30 à 45 € est courant.</p>
+          <div class="row"><input id="c-rate" type="range" min="15" max="120" step="5" value="35" aria-describedby="c-rate-help" /><output for="c-rate" data-out="rate">35 €/h</output></div>
+        </div>
+        <fieldset class="field">
+          <legend>Dans combien d'outils la même information est-elle saisie ?</legend>
+          <div class="seg">
+            <label><input type="radio" name="tools" value="1" /> <span>1 seul</span></label>
+            <label><input type="radio" name="tools" value="2" checked /> <span>2</span></label>
+            <label><input type="radio" name="tools" value="3" /> <span>3 et plus</span></label>
+          </div>
+        </fieldset>
+      </form>
+
+      <div class="result" aria-live="polite">
+        <p class="mono k">CHAQUE ANNÉE, VOUS PERDEZ</p>
+        <p class="big"><span data-res="hours">0</span> h</p>
+        <p class="eur"><span data-res="eur">0</span> €</p>
+        <p class="sub">soit <strong data-res="days">0</strong> jours de travail, ou <strong data-res="fte">0</strong> poste(s) à temps plein.</p>
+        <div class="reco">
+          <p class="mono k">LA GAMME ADAPTÉE</p>
+          <p class="g"><a data-res="link" href="/gammes/assembler/"><span data-res="gamme">Assembler</span> →</a></p>
+          <p class="sub" data-res="payback"></p>
+        </div>
+      </div>
+    </div>
+    <p class="wrap note">Calcul indicatif : 218 jours travaillés par an, 1 607 heures par temps plein. L'hypothèse de retour sur investissement suppose qu'on récupère 60 % du temps perdu.</p>
+  </section>
+
+  <Cta title="Ce chiffre vous pique les yeux ?" text="Envoyez-le-moi avec deux lignes de contexte. Je vous dis ce qu'on peut récupérer, et comment." />
+</Base>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-calc]');
+  if (root && !root.dataset.ready) {
+    root.dataset.ready = '1';
+    const $ = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const fmt = (n: number) => Math.round(n).toLocaleString('fr-FR');
+    const gammes: Record<string, { name: string; price: number }> = {
+      '1': { name: 'Constructor', price: 1200 },
+      '2': { name: 'Assembler', price: 3500 },
+      '3': { name: 'Manufacturer', price: 7500 },
+    };
+    function update() {
+      const people = +$<HTMLInputElement>('#c-people').value;
+      const min = +$<HTMLInputElement>('#c-min').value;
+      const rate = +$<HTMLInputElement>('#c-rate').value;
+      const tools = (root!.querySelector<HTMLInputElement>('input[name="tools"]:checked')?.value) ?? '2';
+      $('[data-out="people"]').textContent = String(people);
+      $('[data-out="min"]').textContent = `${min} min`;
+      $('[data-out="rate"]').textContent = `${rate} €/h`;
+      const hours = (people * min * 218) / 60;
+      const eur = hours * rate;
+      $('[data-res="hours"]').textContent = fmt(hours);
+      $('[data-res="eur"]').textContent = fmt(eur);
+      $('[data-res="days"]').textContent = fmt(hours / 7.35);
+      $('[data-res="fte"]').textContent = (hours / 1607).toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+      const g = gammes[tools];
+      $('[data-res="gamme"]').textContent = g.name;
+      $<HTMLAnchorElement>('[data-res="link"]').href = `/gammes/${g.name.toLowerCase()}/`;
+      const monthly = (eur * 0.6) / 12;
+      const months = monthly > 0 ? g.price / monthly : Infinity;
+      $('[data-res="payback"]').textContent = months < 1
+        ? `À partir de ${fmt(g.price)} €, remboursé en moins d'un mois.`
+        : months < 36
+          ? `À partir de ${fmt(g.price)} €, remboursé en ${fmt(Math.ceil(months))} mois environ.`
+          : `À partir de ${fmt(g.price)} €. Avec si peu de temps perdu, un Constructor ciblé suffit peut-être.`;
+    }
+    root.addEventListener('input', update);
+    update();
+  }
+</script>
+
+<style>
+  .calc { display: grid; grid-template-columns: 1.1fr 1fr; gap: 1.5rem; align-items: stretch; }
+  .inputs { display: grid; gap: 1.6rem; }
+  .field { border: 0; padding: 0; margin: 0; }
+  label, legend { font-weight: 700; font-family: var(--font-title); font-size: 1.05rem; }
+  .help { margin: .2rem 0 0; font-size: .9rem; color: var(--ink-soft); }
+  .row { display: flex; align-items: center; gap: 1rem; margin-top: .6rem; }
+  input[type='range'] { flex: 1; accent-color: var(--violet); height: 28px; }
+  output { font-family: var(--font-mono); font-weight: 500; min-width: 5.5rem; text-align: right; }
+  .seg { display: flex; gap: .5rem; margin-top: .7rem; flex-wrap: wrap; }
+  .seg label { font-family: var(--font-text); font-weight: 600; font-size: .95rem; cursor: pointer; }
+  .seg input { position: absolute; opacity: 0; }
+  .seg span { display: inline-block; padding: .6rem 1rem; border: 2px solid var(--ink); border-radius: 10px; }
+  .seg input:checked + span { background: var(--ink); color: #fff; }
+  .seg input:focus-visible + span { outline: 3px solid var(--orange); outline-offset: 2px; }
+  .result { background: var(--ink); color: #fff; border-radius: var(--radius-lg); padding: 2rem; display: flex; flex-direction: column; }
+  .k { font-size: .75rem; color: var(--violet-light); margin: 0; }
+  .big { font-family: var(--font-title); font-weight: 700; font-size: clamp(3rem, 7vw, 4.6rem); line-height: 1; margin: .5rem 0 .2rem; letter-spacing: -.03em; }
+  .eur { font-family: var(--font-title); font-weight: 700; font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--orange-light); margin: 0 0 .6rem; }
+  .sub { color: #d6d0ec; margin: 0; }
+  .reco { margin-top: auto; padding-top: 1.6rem; border-top: 1px solid rgb(255 255 255 / .14); }
+  .g { margin: .3rem 0 .4rem; font-family: var(--font-title); font-size: 1.6rem; font-weight: 700; }
+  .g a { color: #fff; text-decoration: none; }
+  .g a:hover { color: var(--orange-light); }
+  .note { font-size: .88rem; color: var(--ink-soft); margin-top: 1rem; }
+  @media (max-width: 900px) { .calc { grid-template-columns: 1fr; } }
+</style>

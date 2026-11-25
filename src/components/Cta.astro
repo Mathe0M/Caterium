@@ -1,25 +1,36 @@
 ---
 interface Props { title?: string; text?: string }
 const {
-  title = 'Un problème d’outils qui vous freine ?',
-  text = 'Racontez-moi en quelques lignes où vous perdez du temps. Je vous réponds sous 48 h ouvrées avec une première piste, sans engagement.',
+  title = 'Un outil qui vous freine ?',
+  text = 'Racontez-moi en trois lignes où part votre temps. Je réponds sous 48 h ouvrées avec une première piste, sans engagement.',
 } = Astro.props;
 ---
-<section class="section section--dark cta">
-  <div class="wrap inner">
-    <div>
-      <h2>{title}</h2>
-      <p class="lead">{text}</p>
-    </div>
-    <div class="btn-row">
-      <a class="btn btn--primary" href="/contact/">Décrire mon besoin</a>
-      <a class="btn btn--ghost" href="/prestations/immersion-diagnostic/">Commencer par un diagnostic</a>
+<section class="section cta-wrap">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <h2>{title}</h2>
+        <p>{text}</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn--primary" href="/contact/">Décrire mon besoin →</a>
+        <a class="btn btn--ghost-light" href="/calculateur/">Calculer mon temps perdu</a>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
-  .inner { display: grid; grid-template-columns: 1.3fr 1fr; gap: 2rem; align-items: center; }
-  .btn-row { justify-content: flex-end; margin-top: 0; }
-  @media (max-width: 860px) { .inner { grid-template-columns: 1fr; } .btn-row { justify-content: flex-start; } }
+  .cta-wrap { padding-top: 0; }
+  .cta {
+    background: var(--violet); color: #fff; border-radius: 24px; padding: clamp(2rem, 5vw, 3.2rem);
+    display: grid; grid-template-columns: 1.4fr auto; gap: 2rem; align-items: center;
+    box-shadow: 0 0 0 1px var(--violet), 0 0 60px rgb(109 59 255 / .45);
+  }
+  h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); margin-bottom: .4em; }
+  p { margin: 0; color: #efeaff; font-size: 1.1rem; max-width: 52ch; }
+  .btn-row { margin: 0; justify-content: flex-end; }
+  .btn--ghost-light { border-color: #fff; color: #fff; }
+  .btn--ghost-light:hover { background: #fff; color: var(--ink); }
+  @media (max-width: 860px) { .cta { grid-template-columns: 1fr; } .btn-row { justify-content: flex-start; } }
 </style>

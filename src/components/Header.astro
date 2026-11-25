@@ -7,7 +7,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
 ---
 <header class="site-header">
   <div class="wrap bar">
-    <a href="/" class="brand" aria-label="Somerloop, retour à l'accueil"><Logo /></a>
+    <a href="/" class="brand" aria-label="Caterium, retour à l'accueil"><Logo interactive /></a>
     <button class="burger" type="button" aria-expanded="false" aria-controls="main-nav">
       <span class="burger__open"><Icon name="menu" /></span>
       <span class="burger__close"><Icon name="close" /></span>
@@ -47,7 +47,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
 <style>
   .site-header {
     position: sticky; top: 0; z-index: 50;
-    background: rgb(251 250 247 / 0.9); backdrop-filter: blur(10px);
+    background: rgb(248 245 238 / 0.92); backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
   .bar { display: flex; align-items: center; justify-content: space-between; height: 72px; gap: 1rem; }
@@ -58,8 +58,8 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
     color: var(--ink); text-decoration: none; font-weight: 500; padding: .3rem 0;
     border-bottom: 2px solid transparent;
   }
-  .nav ul a:hover { border-color: var(--accent); }
-  .nav ul a[aria-current='page'] { border-color: var(--loop); }
+  .nav ul a:hover { border-color: var(--orange); }
+  .nav ul a[aria-current='page'] { border-color: var(--violet); }
   .nav__cta { padding: .65rem 1.1rem; font-size: .95rem; }
   .burger { display: none; background: none; border: 0; padding: .4rem; color: var(--ink); cursor: pointer; }
   .burger__close { display: none; }

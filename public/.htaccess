@@ -1,4 +1,4 @@
-# somerloop.fr — configuration Apache (o2switch)
+# caterium.fr — configuration Apache (o2switch)
 
 Options -Indexes
 DirectoryIndex index.html index.php

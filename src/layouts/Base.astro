@@ -3,6 +3,8 @@ import '@fontsource-variable/inter';
 import '@fontsource/space-grotesk/500.css';
 import '@fontsource/space-grotesk/600.css';
 import '@fontsource/space-grotesk/700.css';
+import '@fontsource/jetbrains-mono/500.css';
+import EasterEggs from '../components/EasterEggs.astro';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -17,7 +19,7 @@ interface Props {
 }
 const { title, description, schema, noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, SITE.url).href;
-const fullTitle = title.includes('Somerloop') ? title : `${title} | Somerloop`;
+const fullTitle = title.includes('Caterium') ? title : `${title} | Caterium`;
 
 const org = {
   '@context': 'https://schema.org',
@@ -46,10 +48,10 @@ const { matomo } = SITE;
     {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <meta name="theme-color" content="#101828" />
+    <meta name="theme-color" content="#12101a" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="fr_FR" />
-    <meta property="og:site_name" content="Somerloop" />
+    <meta property="og:site_name" content="Caterium" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -77,5 +79,6 @@ const { matomo } = SITE;
       <slot />
     </main>
     <Footer />
+    <EasterEggs />
   </body>
 </html>

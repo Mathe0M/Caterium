@@ -8,13 +8,14 @@ import Faq from '../../components/Faq.astro';
 import { SITE } from '../../config';
 
 export async function getStaticPaths() {
-  const all = (await getCollection('prestations')).sort((a, b) => a.data.order - b.data.order);
+  const all = (await getCollection('gammes')).sort((a, b) => a.data.order - b.data.order);
   return all.map((entry) => ({ params: { id: entry.id }, props: { entry, all } }));
 }
 const { entry, all } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
-const others = all.filter((p) => p.id !== entry.id).slice(0, 3);
+const others = all.filter((p) => p.id !== entry.id);
+const label = d.kind === 'entree' ? 'Étape 0 · diagnostic' : d.kind === 'visibilite' ? 'Option · visibilité' : `${d.mk} · ${d.entries === 4 ? '3 entrées et +' : d.entries + (d.entries === 1 ? ' entrée' : ' entrées')}`;
 
 const schema = {
   '@context': 'https://schema.org',
@@ -29,24 +30,31 @@ const schema = {
 ---
 <Base title={d.seoTitle} description={d.description} schema={schema}>
   <PageHero
-    eyebrow={d.badge ?? 'Prestation'}
+    eyebrow={label}
     title={d.title}
-    lead={d.short}
-    crumbs={[{ href: '/prestations/', label: 'Prestations' }, { href: `/prestations/${entry.id}/`, label: d.title }]}
+    lead={d.tagline}
+    crumbs={[{ href: '/gammes/', label: 'Gammes' }, { href: `/gammes/${entry.id}/`, label: d.name }]}
   >
     <dl class="facts">
-      <div><dt><Icon name="euro" size={18} /> Budget</dt><dd>{d.price}</dd></div>
-      <div><dt><Icon name="clock" size={18} /> Durée</dt><dd>{d.duration}</dd></div>
-      <div><dt><Icon name="layers" size={18} /> Format</dt><dd>{d.format}</dd></div>
+      <div><dt>Budget</dt><dd>{d.price}</dd></div>
+      <div><dt>Durée</dt><dd>{d.duration}</dd></div>
+      {d.kind === 'outil' && <div><dt>Inclus</dt><dd>3 mois de maintenance</dd></div>}
     </dl>
     <div class="btn-row">
-      <a class="btn btn--primary" href={`/contact/?sujet=${entry.id}`}>Demander un devis <Icon name="arrow" size={18} /></a>
+      <a class="btn btn--primary" href={`/contact/?sujet=${entry.id}`}>Demander un devis →</a>
+      <a class="btn btn--ghost" href="/gammes/">Comparer les gammes</a>
     </div>
   </PageHero>
 
   <section class="section">
     <div class="wrap split">
-      <div class="prose"><Content /></div>
+      <div>
+        <div class="example">
+          <span class="pill pill--dark">EXEMPLE TYPE</span>
+          <p>{d.example}</p>
+        </div>
+        <div class="prose"><Content /></div>
+      </div>
       <aside class="side">
         <div class="card">
           <h2 class="h3">C'est pour vous si…</h2>
@@ -60,14 +68,14 @@ const schema = {
     </div>
   </section>
 
-  <section class="section section--alt">
+  <section class="section section--deep">
     <div class="wrap">
       <p class="eyebrow">Déroulé</p>
       <h2>Comment ça se passe</h2>
       <ol class="steps">
         {d.steps.map((s, i) => (
-          <li class="card">
-            <span class="num">{String(i + 1).padStart(2, '0')}</span>
+          <li>
+            <span class="num mono">{String(i + 1).padStart(2, '0')}</span>
             <h3>{s.title}</h3>
             <p>{s.text}</p>
           </li>
@@ -85,12 +93,12 @@ const schema = {
 
   <section class="section section--alt">
     <div class="wrap">
-      <h2>Les autres prestations</h2>
-      <div class="grid grid-3">
+      <h2>Les autres gammes</h2>
+      <div class="grid others">
         {others.map((p) => (
-          <a class="card card--link" href={`/prestations/${p.id}/`}>
-            <span class="ico"><Icon name={p.data.icon as any} /></span>
-            <h3>{p.data.title}</h3>
+          <a class="card card--link" href={`/gammes/${p.id}/`}>
+            <span class="mono k">{p.data.mk ?? (p.data.kind === 'entree' ? 'ÉTAPE 0' : 'OPTION')}</span>
+            <h3>{p.data.name}</h3>
             <p>{p.data.short}</p>
             <span class="more">Découvrir <Icon name="arrow" size={16} /></span>
           </a>
@@ -104,12 +112,21 @@ const schema = {
 
 <style>
   .facts { display: flex; flex-wrap: wrap; gap: 1rem 2.5rem; margin: 1.8rem 0 0; }
-  .facts dt { display: flex; align-items: center; gap: .4rem; font-size: .85rem; color: var(--ink-soft); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
-  .facts dd { margin: .2rem 0 0; font-family: var(--font-title); font-weight: 700; font-size: 1.25rem; }
+  .facts dt { font-family: var(--font-mono); font-size: .78rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .05em; }
+  .facts dd { margin: .2rem 0 0; font-family: var(--font-title); font-weight: 700; font-size: 1.2rem; }
   .split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 3rem; align-items: start; }
   .side { display: grid; gap: 1.25rem; position: sticky; top: 96px; }
   .h3 { font-size: 1.2rem; }
-  .steps { list-style: none; padding: 0; margin: 2rem 0 0; display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
-  .num { font-family: var(--font-title); font-weight: 700; color: var(--accent-strong); font-size: 1.1rem; display: block; margin-bottom: .6rem; }
+  .example { border-left: 0; background: var(--violet-soft); border-radius: var(--radius-lg); padding: 1.4rem 1.5rem; margin-bottom: 2rem; }
+  .example p { margin: .8rem 0 0; font-size: 1.08rem; }
+  .steps { list-style: none; padding: 0; margin: 2rem 0 0; display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
+  .steps li { background: var(--ink-2); border: 1px solid rgb(255 255 255 / .14); border-radius: var(--radius-lg); padding: 1.5rem; }
+  .steps h3 { color: #fff; margin: .4rem 0; }
+  .steps p { margin: 0; }
+  .num { color: var(--orange-light); font-size: .9rem; }
+  .others { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); margin-top: 1.5rem; }
+  .others .k { font-size: .75rem; color: var(--violet-text); }
+  .others h3 { margin: .4rem 0; }
+  .others p { color: var(--ink-soft); font-size: .95rem; }
   @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .side { position: static; } }
 </style>

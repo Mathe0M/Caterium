@@ -7,21 +7,22 @@ const year = new Date().getFullYear();
   <div class="wrap cols">
     <div class="about">
       <Logo inverted />
-      <p>Outils sur mesure, automatisation et visibilité pour les PME en croissance. Basé à Agen, à distance partout en France.</p>
+      <p>Logiciel métier sur mesure pour entreprises en croissance. Basé à Agen, à distance partout en France.</p>
       <p><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
     </div>
-    <nav aria-label="Prestations">
-      <h2>Prestations</h2>
+    <nav aria-label="Gammes">
+      <h2>Gammes</h2>
       <ul>
-        <li><a href="/prestations/immersion-diagnostic/">Immersion et diagnostic</a></li>
-        <li><a href="/prestations/logiciel-metier-sur-mesure/">Logiciel métier sur mesure</a></li>
-        <li><a href="/prestations/automatisation-connexion-outils/">Automatisation des outils</a></li>
-        <li><a href="/prestations/seo-technique-visibilite-locale/">SEO et visibilité locale</a></li>
-        <li><a href="/prestations/suivi-evolution/">Suivi et évolution</a></li>
+        <li><a href="/gammes/observation/">Observation · diagnostic</a></li>
+        <li><a href="/gammes/constructor/">Constructor · automatisation</a></li>
+        <li><a href="/gammes/assembler/">Assembler · connexion d'outils</a></li>
+        <li><a href="/gammes/manufacturer/">Manufacturer · logiciel métier</a></li>
+        <li><a href="/gammes/radar/">Radar · visibilité</a></li>
+        <li><a href="/calculateur/">Calculateur du temps perdu</a></li>
       </ul>
     </nav>
-    <nav aria-label="Somerloop">
-      <h2>Somerloop</h2>
+    <nav aria-label="Caterium">
+      <h2>Caterium</h2>
       <ul>
         <li><a href="/realisations/">Réalisations</a></li>
         <li><a href="/parcours/">Parcours</a></li>
@@ -33,7 +34,7 @@ const year = new Date().getFullYear();
     </nav>
   </div>
   <div class="wrap legal">
-    <p>© {year} Somerloop</p>
+    <p>© {year} Caterium</p>
     <ul>
       <li><a href="/mentions-legales/">Mentions légales</a></li>
       <li><a href="/cgv/">CGV</a></li>
@@ -45,14 +46,14 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  .site-footer { background: var(--ink); color: #d0d5dd; padding-top: 4rem; font-size: .97rem; }
+  .site-footer { background: var(--ink); color: #d6d0ec; padding-top: 4rem; font-size: .97rem; }
   .cols { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2.5rem; padding-bottom: 3rem; }
   .about p { margin-top: 1rem; max-width: 36ch; }
   h2 { font-size: 1rem; color: #fff; margin-bottom: 1rem; }
   ul { list-style: none; margin: 0; padding: 0; }
   li { margin-bottom: .5rem; }
-  a { color: #d0d5dd; text-decoration: none; }
-  a:hover { color: var(--accent); text-decoration: underline; }
+  a { color: #d6d0ec; text-decoration: none; }
+  a:hover { color: var(--orange-light); text-decoration: underline; }
   .legal {
     border-top: 1px solid rgb(255 255 255 / 0.12); padding-block: 1.4rem;
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; font-size: .88rem;

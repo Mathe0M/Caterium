@@ -1,13 +1,13 @@
 <?php
 /**
- * Formulaire de contact somerloop.fr — envoi par e-mail (o2switch, fonction mail()).
+ * Formulaire de contact caterium.fr — envoi par e-mail (o2switch, fonction mail()).
  * Anti-spam sans cookie : champ piège, délai minimal de saisie, limite par IP.
  * Aucune donnée n'est stockée sur le serveur (hors compteur anti-abus anonymisé, effacé après 1 h).
  */
 
 // ---- Réglages ----
-const TO_EMAIL   = 'contact@somerloop.fr';      // destinataire
-const FROM_EMAIL = 'formulaire@somerloop.fr';   // doit exister ou être un alias du domaine
+const TO_EMAIL   = 'contact@caterium.fr';      // destinataire
+const FROM_EMAIL = 'formulaire@caterium.fr';   // doit exister ou être un alias du domaine
 const MIN_SECONDS = 3;                          // délai minimal entre affichage et envoi
 const MAX_PER_HOUR = 5;                         // envois max par IP et par heure
 
@@ -55,11 +55,12 @@ $message    = field('message', 5000);
 
 $sujets = [
     '' => 'Non précisé',
-    'immersion-diagnostic' => 'Immersion et diagnostic',
-    'logiciel-metier-sur-mesure' => 'Logiciel métier sur mesure',
-    'automatisation-connexion-outils' => 'Automatisation et connexion des outils',
-    'seo-technique-visibilite-locale' => 'SEO technique et visibilité locale',
-    'suivi-evolution' => 'Suivi et évolution',
+    'observation' => 'Observation (diagnostic)',
+    'constructor' => 'Constructor (automatisation)',
+    'assembler' => 'Assembler (connexion d\'outils)',
+    'manufacturer' => 'Manufacturer (logiciel métier)',
+    'radar' => 'Radar (visibilité)',
+    'suivi' => 'Suivi et maintenance',
 ];
 
 if ($nom === '' || $entreprise === '' || $message === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -69,7 +70,7 @@ $sujetLabel = $sujets[$sujet] ?? 'Non précisé';
 
 // 5. Envoi
 $subject = 'Nouvelle demande : ' . $entreprise . ' (' . $sujetLabel . ')';
-$body = "Nouvelle demande depuis somerloop.fr\n\n"
+$body = "Nouvelle demande depuis caterium.fr\n\n"
       . "Nom : $nom\n"
       . "Entreprise : $entreprise\n"
       . "E-mail : $email\n"
@@ -79,7 +80,7 @@ $body = "Nouvelle demande depuis somerloop.fr\n\n"
       . "Message :\n$message\n";
 
 $headers = [
-    'From: Somerloop <' . FROM_EMAIL . '>',
+    'From: Caterium <' . FROM_EMAIL . '>',
     'Reply-To: ' . $email,
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset=UTF-8',
