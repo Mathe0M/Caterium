@@ -63,7 +63,6 @@ const bars = [40, 55, 48, 72, 94];
       <li><span aria-hidden="true">✓</span> Des réponses IA tirées de vos documents</li>
     </ul>
   </div>
-  <p class="hint mono" aria-hidden="true" data-count></p>
 </div>
 
 <script>
@@ -74,7 +73,6 @@ const bars = [40, 55, 48, 72, 94];
     const flow = panel.querySelector<HTMLElement>('[data-flow]')!;
     const svg = panel.querySelector<SVGSVGElement>('[data-svg]')!;
     const core = panel.querySelector<HTMLElement>('[data-core]')!;
-    const countEl = panel.querySelector<HTMLElement>('[data-count]')!;
     const status = panel.querySelector<HTMLElement>('[data-status]')!;
 
     const pressed = (el: Element) => el.getAttribute('aria-pressed') === 'true';
@@ -172,7 +170,6 @@ const bars = [40, 55, 48, 72, 94];
       panel.style.setProperty('--speed', `${Math.max(0.35, 1.3 - nIn * 0.18)}s`);
       status.textContent = live ? '● EN PRODUCTION' : '○ EN ATTENTE';
       status.classList.toggle('off', !live);
-      countEl.textContent = `${nIn} source${nIn > 1 ? 's' : ''} → ${nMod} brique${nMod > 1 ? 's' : ''} → ${nOut} destinataire${nOut > 1 ? 's' : ''} · cliquez pour brancher ou débrancher`;
     }
 
     draw();
