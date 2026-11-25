@@ -56,6 +56,7 @@ const outputsMore = ['Expert-comptable', 'Fournisseurs', 'Commerciaux', 'Service
       <li><span aria-hidden="true">✓</span> Une seule saisie</li>
       <li><span aria-hidden="true">✓</span> Tâches automatisées</li>
       <li><span aria-hidden="true">✓</span> Une IA sur mesure</li>
+      <li><span aria-hidden="true">✓</span> Données sécurisées</li>
     </ul>
   </div>
 </div>
@@ -271,7 +272,7 @@ const outputsMore = ['Expert-comptable', 'Fournisseurs', 'Commerciaux', 'Service
   .core.idle { animation: none; background: #24203a; box-shadow: none; }
 
   .bottom { margin-top: 1.3rem; }
-  .promises { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .5rem; font-size: .82rem; font-weight: 600; }
+  .promises { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; font-size: .82rem; font-weight: 600; }
   .promises li { background: #1f1b2e; border-radius: 10px; padding: .6rem .45rem; white-space: nowrap; text-align: center; }
   .promises span { color: var(--orange-light); font-weight: 700; }
   .hint { font-size: .66rem; color: #8f88aa; margin: .9rem 0 0; text-align: right; }
@@ -281,11 +282,11 @@ const outputsMore = ['Expert-comptable', 'Fournisseurs', 'Commerciaux', 'Service
     0%, 100% { box-shadow: 0 0 0 1px #6d3bff, 0 0 18px rgb(109 59 255 / .55), 0 0 48px rgb(109 59 255 / .25); }
     50% { box-shadow: 0 0 0 1px #6d3bff, 0 0 28px rgb(109 59 255 / .8), 0 0 80px rgb(109 59 255 / .35); }
   }
+  @media (max-width: 460px) { .promises { grid-template-columns: 1fr; } }
   @media (max-width: 560px) {
     .flow { grid-template-columns: 1fr 1.1fr 1fr; gap: 1.1rem; }
     .node, .slot, .mod { font-size: .72rem; padding: .45rem .45rem; }
     .lbl { font-size: .55rem; }
-    .promises { grid-template-columns: 1fr; }
     .hint { text-align: left; }
   }
 </style>
