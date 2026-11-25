@@ -8,7 +8,7 @@ import { SITE } from '../config';
 ---
 <Base
   title="Caterium | Logiciel métier sur mesure pour entreprises en croissance"
-  description="Caterium développe des logiciels métier sur mesure, automatise les tâches répétitives et connecte les outils des entreprises en croissance. Entre le no-code et l'agence. Agen, Toulouse, France."
+  description="Caterium développe des logiciels métier sur mesure, automatise les tâches répétitives et connecte les outils des entreprises en croissance. L'IA adoptée sans risque. Agen, Toulouse, France."
 >
   <section class="hero section--grid">
     <div class="wrap hero-grid">
@@ -77,19 +77,21 @@ import { SITE } from '../config';
     <div class="wrap split">
       <div>
         <p class="eyebrow">Positionnement</p>
-        <h2>Entre le no-code et l'agence</h2>
-        <p>Le no-code va vite, puis il plafonne : abonnements qui grimpent, données dispersées, empilement fragile. L'agence fait du solide, avec des budgets et des délais pensés pour les grands comptes.</p>
-        <p>Caterium se place au milieu : <strong>un vrai outil, développé pour votre entreprise, au budget d'un indépendant.</strong></p>
+        <h2>L'IA va vite. <span class="c-violet">Encore faut-il</span> <span class="c-orange">qu'elle aille dans la bonne direction.</span></h2>
+        <p>Vous avez peut-être déjà demandé à une IA de vous coder un outil. C'est rapide, c'est bluffant… jusqu'au moment de le brancher à vos vrais logiciels, de gérer les accès ou de le confier à l'équipe. On est tous passés par là.</p>
+        <p>J'utilise l'IA tous les jours, et c'est justement pour ça que je sais où elle s'arrête. <strong>Mon rôle : aider votre entreprise à adopter l'IA, sans prendre de risques.</strong></p>
+        <p class="leak">Et pendant que les fuites de données s'enchaînent en France, un outil bricolé sans sécurité, c'est une porte laissée ouverte.</p>
       </div>
-      <div class="table-scroll" tabindex="0" role="region" aria-label="Comparaison no-code, Caterium, agence">
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Comparaison : logiciel du marché, IA en solo, Caterium">
         <table class="compare">
-          <thead><tr><th scope="col"><span class="sr-only">Critère</span></th><th scope="col">No-code</th><th scope="col" class="us">Caterium</th><th scope="col">Agence</th></tr></thead>
+          <thead><tr><th scope="col"><span class="sr-only">Critère</span></th><th scope="col">Logiciel du marché</th><th scope="col">IA en solo</th><th scope="col" class="us">Caterium</th></tr></thead>
           <tbody>
-            <tr><th scope="row">Adapté à votre métier</th><td>En partie</td><td class="us">Oui</td><td>Oui</td></tr>
-            <tr><th scope="row">Budget de départ</th><td>Faible</td><td class="us">Maîtrisé</td><td>Élevé</td></tr>
-            <tr><th scope="row">Coût qui grimpe avec l'usage</th><td>Souvent</td><td class="us">Non</td><td>Non</td></tr>
-            <tr><th scope="row">Code qui vous appartient</th><td>Non</td><td class="us">Oui</td><td>Selon contrat</td></tr>
-            <tr><th scope="row">Interlocuteur unique</th><td>Vous-même</td><td class="us">Oui</td><td>Rarement</td></tr>
+            <tr><th scope="row">Adapté à votre métier</th><td>Vous vous adaptez à lui</td><td>Si vous savez quoi demander</td><td class="us">Pensé avec vous</td></tr>
+            <tr><th scope="row">Branché à vos outils</th><td>Selon les connecteurs</td><td>Rarement fiable</td><td class="us">Oui</td></tr>
+            <tr><th scope="row">Sécurité, accès, RGPD</th><td>Oui</td><td>À vos risques</td><td class="us">Inclus</td></tr>
+            <tr><th scope="row">Coût qui grimpe avec l'usage</th><td>Souvent, par utilisateur</td><td>Non</td><td class="us">Non</td></tr>
+            <tr><th scope="row">Responsable si ça casse</th><td>Un support</td><td>Personne</td><td class="us">Un interlocuteur</td></tr>
+            <tr><th scope="row">Équipes formées</th><td>Des tutoriels</td><td>Non</td><td class="us">Oui</td></tr>
           </tbody>
         </table>
       </div>
@@ -159,6 +161,7 @@ import { SITE } from '../config';
   .compare thead th { font-family: var(--font-title); }
   .compare tbody th { font-weight: 500; color: var(--ink-soft); }
   .compare .us { background: var(--violet); color: #fff; font-weight: 700; }
+  .leak { border-left: 3px solid var(--orange); padding-left: .9rem; color: var(--ink-soft); }
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .stats div { background: #1f1b2e; border: 1px solid #3a3352; border-radius: var(--radius-lg); padding: 1.5rem; }
   .stats strong { display: block; font-family: var(--font-title); font-size: clamp(2rem, 4vw, 2.8rem); color: var(--orange-light); line-height: 1.1; }

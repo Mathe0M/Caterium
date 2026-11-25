@@ -13,7 +13,7 @@ duration: "1 à 2 semaines"
 example: "Une entreprise de 25 personnes jongle entre trois logiciels et une dizaine de tableurs. Le diagnostic montre que 60 % du problème se règle en connectant deux outils existants : pas besoin d'un nouveau logiciel."
 forWho:
   - "Vous sentez que vos outils vous ralentissent, sans savoir par où commencer."
-  - "Vous hésitez entre un logiciel du marché, du no-code ou un outil sur mesure."
+  - "Vous hésitez entre un logiciel du marché, un outil fait avec l'IA ou un outil sur mesure."
   - "Vous voulez un avis extérieur avant d'engager un budget."
 deliverables:
   - "La carte de vos processus et de vos outils actuels"

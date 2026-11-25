@@ -41,11 +41,11 @@ faq:
     a: "À partir de 7 500 €, selon le nombre d'écrans, de connexions et d'utilisateurs. Le découpage par étapes permet de démarrer avec une première version et de financer la suite avec ses gains."
 ---
 
-## Entre le no-code et l'agence
+## Mieux qu'un logiciel du marché, plus sûr que l'IA en solo
 
-Le no-code va vite, mais il plafonne : abonnements qui grimpent avec le nombre d'utilisateurs, données hébergées on ne sait où, empilement fragile dès que l'entreprise grandit. Une agence fait du solide, avec des budgets et des délais pensés pour les grands comptes.
+Un logiciel du marché vous oblige à adapter votre métier à l'outil, et son prix grimpe avec le nombre d'utilisateurs. Un outil généré en vitesse avec une IA impressionne en démo, puis bloque dès qu'il faut le brancher à vos vrais logiciels, gérer les accès ou protéger vos données.
 
-Le Manufacturer, c'est **un vrai logiciel, développé pour votre entreprise, au budget d'un indépendant**, avec un seul interlocuteur du premier rendez-vous à la maintenance.
+Le Manufacturer, c'est **un vrai logiciel, pensé pour votre façon de travailler, sécurisé et maintenu**, avec un seul interlocuteur du premier rendez-vous à la maintenance. J'utilise l'IA pour aller vite, et mon expérience pour qu'elle aille dans la bonne direction.
 
 ## Une méthode qui limite les risques
 
